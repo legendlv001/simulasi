@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi TKA Bahasa Indonesia 2026 - Complete Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navbar -->
+    <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/20 p-2 rounded-lg text-xl">
+                    📚
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Simulasi TKA SD/MI 2026</h1>
+                    <p class="text-xs text-indigo-200" id="headerSubTitle">Bahasa Indonesia & Matematika (30 Soal/Mapel)</p>
+                </div>
+            </div>
+            <div id="userInfoHeader" class="hidden text-right">
+                <span class="text-xs block text-indigo-200" id="headerSubjectBadge">Mapel</span>
+                <span id="headerUserName" class="font-semibold text-sm"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-6 flex-grow">
+
+        <!-- STEP 1: DASHBOARD INPUT NAMA, MAPEL, & OPTION SOAL -->
+        <section id="stepDashboard" class="glass-card rounded-2xl shadow-xl p-6 md:p-10 border border-slate-200">
+            <div class="text-center max-w-lg mx-auto">
+                <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+                    ✏️
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Simulasi Tes Kemampuan Akademik</h2>
+                <p class="text-slate-600 text-sm mb-6">Pilih mata pelajaran dan tentukan jumlah soal yang ingin Anda latih dari dokumen TKA 2026 resmi.</p>
+                
+                <form id="startForm" onsubmit="event.preventDefault(); startQuiz();" class="space-y-4">
+                    <div class="text-left">
+                        <label for="userNameInput" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nama Lengkap Peserta</label>
+                        <input type="text" id="userNameInput" required placeholder="Masukkan nama Anda..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-slate-800 font-medium">
+                    </div>
+
+                    <div class="text-left">
+                        <label for="subjectSelect" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mata Pelajaran TKA</label>
+                        <select id="subjectSelect" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-slate-800 font-medium bg-white">
+                            <option value="indo">🇮🇩 Bahasa Indonesia (30 Soal)</option>
+                            <option value="mtk">📐 Matematika (30 Soal)</option>
+                        </select>
+                    </div>
+
+                    <div class="text-left">
+                        <label for="questionCountInput" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Jumlah Soal yang Ingin Dikerjakan (1 - 30)</label>
+                        <input type="number" id="questionCountInput" min="1" max="30" value="5" required placeholder="Ketik angka 1-30..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-slate-800 font-medium">
+                    </div>
+
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-left text-xs text-indigo-900 space-y-1.5">
+                        <p class="font-semibold text-indigo-800">📋 Informasi Pengerjaan:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Soal bersumber langsung dari PDF Bahasa Indonesia & Matematika TKA 2026.</li>
+                            <li>Model Soal: Pilihan Ganda (PG), Multiple Choice (MCMA), dan Tabel Pernyataan.</li>
+                            <li>Tersedia stimulus & gambar penunjang pada setiap kelompok soal.</li>
+                            <li>Hasil skor dan pembahasan detail ditampilkan di akhir simulasi.</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-indigo-500/30 transition duration-200 text-base">
+                        Mulai Mengerjakan Soal 🚀
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- STEP 2: PENGERJAAN SOAL -->
+        <section id="stepQuiz" class="hidden space-y-6">
+
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-xl shadow-sm p-4 border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full" id="questionIndicator">Soal 1 dari 30</span>
+                    <span class="text-xs text-slate-500" id="questionTypeBadge">Pilihan Ganda</span>
+                </div>
+                <div class="w-full md:w-1/2 bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                    <div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 3.33%;"></div>
+                </div>
+            </div>
+
+            <!-- Stimulus Box -->
+            <div id="stimulusBox" class="bg-amber-50/80 border border-amber-200/70 rounded-xl p-5 md:p-6 shadow-sm">
+                <div class="flex items-center space-x-2 text-amber-800 font-bold text-sm mb-3">
+                    <span>📖 STIMULUS BACAAN</span>
+                </div>
+                <div id="stimulusContent" class="text-sm text-slate-700 leading-relaxed space-y-3 max-h-60 overflow-y-auto pr-2">
+                    <!-- Inserted dynamically -->
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                <div id="questionTitle" class="text-sm font-semibold text-indigo-600 mb-1">SOAL 1</div>
+                <h3 id="questionText" class="text-slate-800 font-bold text-base md:text-lg mb-6">Teks Soal...</h3>
+
+                <!-- Options Render Area -->
+                <div id="optionsContainer" class="space-y-3">
+                    <!-- Dynamic Options -->
+                </div>
+            </div>
+
+            <!-- Quiz Navigation -->
+            <div class="flex justify-between items-center pt-2">
+                <button id="btnPrev" onclick="prevQuestion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2.5 px-5 rounded-xl transition disabled:opacity-50 text-sm">
+                    ← Sebelumnya
+                </button>
+                <button id="btnNext" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition text-sm">
+                    Selanjutnya →
+                </button>
+            </div>
+
+        </section>
+
+        <!-- STEP 3: HASIL & PEMBAHASAN -->
+        <section id="stepResult" class="hidden space-y-6">
+
+            <!-- Result Summary Card -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+                <span class="text-4xl mb-2 inline-block">🏆</span>
+                <h2 class="text-2xl font-bold text-slate-800">Hasil Simulasi TKA</h2>
+                <p class="text-sm text-slate-500 mt-1">Peserta: <strong id="resultUserName" class="text-slate-800"></strong></p>
+
+                <!-- Score Box -->
+                <div class="my-6 inline-flex flex-col items-center justify-center p-6 bg-slate-50 border border-slate-200 rounded-2xl min-w-[220px]">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Skor Akhir</span>
+                    <span id="finalScore" class="text-5xl font-extrabold text-indigo-600 my-1">0</span>
+                    <span id="scoreStatus" class="text-xs font-medium text-slate-600">0 dari 30 Soal Benar</span>
+                </div>
+
+                <div class="flex justify-center gap-4">
+                    <button onclick="restartQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow transition text-sm">
+                        🔄 Coba Lagi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Discussion / Pembahasan Section -->
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 pb-3 border-b border-slate-200 flex items-center gap-2">
+                    <span>💡 Koreksi & Pembahasan Soal</span>
+                </h3>
+
+                <div id="pembahasanList" class="space-y-6">
+                    <!-- Dynamic Discussion Items -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        Simulasi TKA SD/MI 2026 &copy; Berdasarkan Dokumen Resmi Kemendikdasmen
+    </footer>
+
+    <!-- Application Logic & Complete Question Database -->
+    <script>
+        // Data STIMULUS BAHASA INDONESIA
+        const stimuliDataIndo = {
+            1: `<strong>STIMULUS 1: Indahnya Hutan-Hutan Mangrove di Indonesia</strong><br><br>
+                Hutan Mangrove di Kulon Progo, Yogyakarta adalah tempat yang menyuguhkan keindahan alam menyejukkan hati. Hutan ini terletak di dekat Pantai Congot, kawasan ini terbagi menjadi beberapa zona menarik seperti Pasir Mendit, Jembatan Api-Api, dan Pantai Kadilangu. Luasnya mencapai sekitar tiga kilometer persegi, dipenuhi pohon-pohon bakau dengan akar unik yang menjulur di atas air.<br><br>
+                Begitu melangkah ke dalam area, pengunjung akan disambut oleh jembatan kayu dan suasana rindang yang membuat hati tenang. Banyak spot foto menarik seperti ayunan, gazebo, dan menara pandang. Tak heran jika tempat ini disebut sebagai <em>"permata tersembunyi"</em> di Kulon Progo.<br><br>
+                Selain indah, hutan ini juga menjadi rumah bagi beragam satwa seperti burung kuntul, kepiting, udang, dan biawak kecil. Ada jalur kayu yang bisa dilewati sambil menikmati semilir angin pantai. Jika ingin lebih dekat dengan alam, pengunjung juga bisa naik perahu menyusuri rimbunnya hutan.`,
+            
+            2: `<strong>STIMULUS 2: Keunikan Bakwan</strong><br><br>
+                Bakwan merupakan makanan unik yang banyak disukai. Bakwan muncul karena pengaruh dari berbagai budaya, seperti Cina, Jepang, bahkan Eropa (Portugis).<br><br>
+                Awalnya, bakwan terbuat dari daging dan tepung yang digoreng. Di Jepang, sayur yang digoreng tepung disebut "tempura". Makanan tersebut bisa jadi ikut mempengaruhi berkembangnya bakwan di Indonesia.<br><br>
+                Kini, bakwan berisi aneka sayuran, seperti taoge, kol, dan wortel, yang dicampur dengan adonan tepung berbumbu rempah. Bisa juga ditambahkan isian udang, sosis, atau bakso.<br><br>
+                Nama bakwan berbeda di tiap daerah. Jakarta, Yogyakarta, Manado, dan Lampung menyebutnya bakwan. Di banyak kota di Jawa Timur disebut ote-ote atau weci. Di Bandung disebut bala-bala. Sementara, di Semarang dan Pekalongan disebut badak.`,
+
+            3: `<strong>STIMULUS 3: Si Biru Kesayangan (Percakapan Salma, Alvin, & Siva)</strong><br><br>
+                Salma: (memeluk botol minumnya) "Minum dulu, ah! Botolku ini hadiah dari Ibu waktu ulang tahun. Aku beri nama dia Si Biru."<br>
+                Alvin: "Hah? Botol aja dikasih nama? Aneh banget, Sal!"<br>
+                Siva: "Ih, botol minum Salma lucu banget. Kamu tiap hari bawa Si Biru, ya?"<br>
+                Salma: "Iya, dong. Si Biru sudah menemani aku setahun ini. Aku jadi nggak pernah beli minuman kemasan lagi!"<br>
+                Alvin: "Ah, ribet. Aku sih, tinggal beli aja. Kalau sudah habis tinggal buang." (mengejek Salma)<br>
+                Salma: "Vin, tahu, nggak? Plastik yang kamu buang itu bisa jadi sampah lingkungan bertahun-tahun. Bisa mencemari tanah dan air juga, lho."<br>
+                Siva: "Benar, Vin. Aku juga sekarang bawa botol. Nih, gambar dinosaurus!"<br>
+                Salma: "Kita nggak bisa terus tutup mata soal sampah plastik. Kita harus peduli. Mulai dari hal kecil, seperti bawa botol sendiri."<br>
+                Alvin: "Hmm, kalau aku punya botol keren, mungkin aku jadi ingin bawa botol."`,
+
+            4: `<strong>STIMULUS 4: Catatan Buku Harian Hujan Meteor</strong><br><br>
+                Buku harianku,<br>
+                Ayah akan mengajakku melihat hujan meteor. Meteor adalah batu atau debu antar-planet. Ketika meteor jatuh ke bumi, meteor terbakar karena gesekan lapisan udara bumi. Itu sebabnya, meteor terlihat seperti bintang jatuh atau bintang berpindah.<br><br>
+                Aku berdoa supaya hari itu tidak hujan. Meteor tampak lebih jelas jika langit cerah. Jika aku beruntung, aku dapat melihat belasan meteor per jam.<br><br>
+                Awalnya aku khawatir kalau bintang jatuh dapat menimpaku. Untunglah, ayah sudah menenangkanku. Hujan meteor tidak berbahaya, kok. Jangan takut, meteor ini akan habis terbakar di langit.<br><br>
+                Duh, rasanya tidak sabar. Aku senang sekali menghabiskan waktu dengan ayah!`,
+
+            5: `<strong>STIMULUS 5 (Bagian 1): Petualangan Giga si Segitiga</strong><br><br>
+                Giga si Segitiga mempunyai banyak ide, dia senang menirukan bentuk. Dia sering mengajak teman-temannya bermain bersama.<br><br>
+                Banyak bentuk yang bisa ditiru. Bentuk dan sudut yang sama membuat mereka selalu serasi. Contohnya pohon cemara, gunung, atap rumah, bendera, dan kipas angin.<br><br>
+                Giga juga suka bermain dengan Pasukan Kotak. Banyak bentuk yang bisa ditirukan, seperti roket, ikan, dan menara.<br><br>
+                Saat bermain dengan heksagonal, dia menirukan bentuk bunga. Bentuk mereka memang berbeda. Namun, mereka memiliki sudut-sudut yang pas.`,
+
+            6: `<strong>STIMULUS 5 (Bagian 2): Perayaan Cap Go Meh di Pulau Kemaro</strong><br><br>
+                Adit dan Danu senang sekali hari ini karena Ibu dan Ayah akan mengajak mereka pergi melihat perayaan Cap Go Meh di Pulau Kemaro. Masyarakat Tionghoa di Kota Palembang merayakan Cap Go Meh, dan orangtuanya ingin mengenalkan perayaan tersebut kepada mereka.<br><br>
+                Ini adalah kedua kalinya Adit dan Danu pergi ke Pulau Kemaro. Waktu itu, mereka naik kapal dari bawah jembatan Musi. Kali ini, mereka akan menyeberangi sungai Musi dengan berjalan kaki di atas jembatan ponton, yang dipasang khusus saat perayaan Imlek setiap tahunnya.<br><br>
+                Namun, ketika mereka tiba di Pulau Kemaro, mereka kecewa karena hujan deras turun. Pertunjukkan barongsai dan penerbangan lampion harus dibatalkan. Meskipun begitu, mereka tetap berusaha menikmati perayaan Cap Go Meh dengan berkeliling pulau dan mencoba makanan khas Imlek. Mereka belajar bahwa tidak semua hal bisa berjalan sesuai rencana, dan yang terpenting adalah tetap bersyukur.`,
+
+            7: `<strong>STIMULUS 6: Kota Berkelanjutan</strong><br><br>
+                Perubahan iklim, bencana alam, dan kesehatan manusia adalah masalah serius. Untuk mengatasinya, pemerintah berupaya membangun kota berkelanjutan.<br><br>
+                Kota berkelanjutan memiliki transportasi publik ramah lingkungan dan murah. Bus dan kereta tidak mencemari udara serta terjangkau. Kota ini menyediakan jalur khusus untuk pejalan kaki dan pesepeda. Listrik di kota berkelanjutan berasal dari tenaga surya. Gedung-gedung dirancang hemat energi.<br><br>
+                Fasilitas publik mudah diakses oleh semua orang: taman, perpustakaan, dan rumah sakit tersedia di berbagai lokasi. Kota juga memiliki ruang terbuka hijau yang nyaman dan asri. Pengelolaan sampah dilakukan dengan baik, termasuk daur ulang sampah.`,
+
+            8: `<strong>STIMULUS 7: Tradisi Ruwatan Rara</strong><br><br>
+                "Pokoknya Rara mau hp sebelum ruwatan!" desak Rara.<br>
+                "Maaf, Nak! Ibu belum bisa membelikannya!" terang Ibu.<br>
+                Ayah menjelaskan keadaan mereka: ibunya seorang pedagang kecil dan ayah hanya penjaga vila, jadi cukup berat untuk membelikan hp.<br><br>
+                Rara sadar dirinya tidak kaya dan meminta maaf ke Ayah dan Ibu. Akhirnya Rara hanya meminta dibelikan buku cerita di pasar. Tibalah hari Ruwatan, saat rambut gimbal Rara akan dipotong oleh Ketua adat. Rara merasa bersyukur dan bersiap mengikutinya dengan sukacita.`,
+
+            9: `<strong>STIMULUS 8: Belajar dari Pengalaman Arul</strong><br><br>
+                Nilai Arul selalu bagus sejak dulu. Padahal, dia tidak pernah belajar. Tapi, nilai Arul mulai menurun. Teman-temannya (Dewi, Reno, Erni) mengajak Arul belajar bersama, namun Arul menolak dan memilih main bola.<br><br>
+                Keesokan hari setelah ujian, Arul kaget melihat nilainya jelek. Erni menasihati: "Berakit-rakit ke hulu, berenang-renang kemudian. Bersakit-sakit dahulu, bersenang-senang kemudian." Reno juga mengajak Arul belajar bareng. Arul pun akhirnya mengangguk dan tersadar.`,
+
+            10: `<strong>STIMULUS 9 & 10: Nelayan Yunus & Kisah Lianne</strong><br><br>
+                <em>Nelayan Yunus:</em> Yunus bekerja rajin sebagai nelayan. Setiap hari mengarungi laut dan melempar jala. Kamal sering bermalas-malasan. Yunus menegur Kamal dengan tegas agar tidak terus meminta-minta ikan. Kamal tersadar dan rajin melaut sendiri.<br><br>
+                <em>Kisah Lianne ("Mama, Aku Bukan Dia"):</em> Lianne suka menggambar. Mamanya sering membandingkan Lianne dengan temannya (Albert yang pintar matematika, Giffari yang pandai basket, Amber yang pandai bernyanyi). Akhirnya Lianne mengikuti lomba menggambar dan menang. Mamanya bangga dan sadar bahwa setiap anak memiliki kelebihan masing-masing.`
+        };
+
+        // Data STIMULUS MATEMATIKA
+        const stimuliDataMtk = {
+            1: `<strong>STIMULUS MATEMATIKA 1: Konsep Pecahan Senilai & Potongan Bangun</strong><br><br>
+                Suatu bangun datar merupakan potongan yang terlihat mewakili bagian dari suatu objek utuh. Pecahan senilai dapat diwakili oleh bagian-bagian gambar yang simetris dan memiliki ukuran luas yang persis sama besar.`,
+
+            2: `<strong>STIMULUS MATEMATIKA 2: Kapasitas Pembangkit Listrik Indonesia</strong><br><br>
+                Listrik berasal dari pembangkit listrik. Di Indonesia terdapat berbagai macam pembangkit listrik dengan total daya 40.000 megawatt (MW).<br>
+                • <strong>PLTU:</strong> 5% dari total listrik<br>
+                • <strong>PLTA:</strong> 1/2 dari total listrik<br>
+                • <strong>PLTG:</strong> 0,075 dari total listrik<br>
+                • <strong>PLTGU:</strong> 30% dari total listrik<br>
+                • <strong>PLTD:</strong> 3/40 dari total listrik`,
+
+            3: `<strong>STIMULUS MATEMATIKA 3: Bantuan Beras Desa & Pengemasan Karung</strong><br><br>
+                Pemerintah desa memberikan bantuan beras untuk keluarga kurang mampu menggunakan dua jenis karung:<br>
+                • <strong>Karung A:</strong> Berat 5 kg<br>
+                • <strong>Karung B:</strong> Berat 3 kg<br>
+                Terdapat persediaan 150 karung beras yang akan dibagikan secara merata ke sejumlah keluarga penerima bantuan.`,
+
+            4: `<strong>STIMULUS MATEMATIKA 4: Diagram Alir Operasi Hitung (Algoritma Aritmetika)</strong><br><br>
+                Sebuah program memiliki proses sebagai berikut:<br>
+                1. Masukkan sebuah bilangan.<br>
+                2. Tambahkan dengan 5.<br>
+                3. Cek: <em>Apakah hasilnya kelipatan 6?</em><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;• Jika <strong>Ya</strong>: Dibagi dengan 3.<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;• Jika <strong>Tidak</strong>: Kurangi dengan 5.<br>
+                4. Kalikan dengan 2 untuk memperoleh Hasil Akhir.`,
+
+            5: `<strong>STIMULUS MATEMATIKA 5: Sifat Magnet & Daya Kincir Air Desa</strong><br><br>
+                • <strong>Magnet:</strong> Wadah berisi 25 benda (12 feromagnetik, 7 paramagnetik, sisanya diamagnetik).<br>
+                • <strong>Daya Kincir Air:</strong> Kincir A (94 Watt/hari), Kincir B (82 Watt/hari), Kincir C (96 Watt/hari). Penggunaan selama 2 hari menghasilkan sisa daya: A (42 Watt), B (13 Watt), C (30 Watt).`,
+
+            6: `<strong>STIMULUS MATEMATIKA 6: Kandungan Gizi Salmon & Resep Keju Sederhana</strong><br><br>
+                • <strong>Salmon:</strong> 1 porsi mengandung 20 gram protein, 10g Omega-3, 150 kalori.<br>
+                • <strong>Keju Sederhana (1 Resep):</strong> 2 gelas susu segar (400 ml), 4 sdt cuka (20 ml), 4 gr garam.`,
+
+            7: `<strong>STIMULUS MATEMATIKA 7: Jadwal Laundry Koin & Sifat Bangun Datar</strong><br><br>
+                • <strong>Laundry:</strong> Linda mencuci tiap 8 hari sekali, Vidya tiap 6 hari sekali. Mereka bertemu pada 10 Agustus 2024.<br>
+                • <strong>Bangun Huruf E:</strong> Terdiri dari 12 garis sisi, 12 titik sudut, dan 8 sudut siku-siku.`,
+
+            8: `<strong>STIMULUS MATEMATIKA 8: Pengukuran Volume, Berat Neraca, & Waktu Jam</strong><br><br>
+                • <strong>Volume Botol Air:</strong> Botol A (450 ml), Botol B (530 ml), Botol C (540 ml), Botol D (470 ml).<br>
+                • <strong>Bahan Cireng Bu Halimah:</strong> Tepung Tapioka (1250g), Tepung Terigu (500g), Ayam (1500g), Bawang Putih (250g), Cabai (250g).<br>
+                • <strong>Waktu Masak Bu Nina:</strong> Mulai pukul 08.15, Selesai pukul 10.25.`,
+
+            9: `<strong>STIMULUS MATEMATIKA 9: Luas, Keliling, & Jenis Keset Kain Perca</strong><br><br>
+                • <strong>Keset Perca:</strong><br>
+                &nbsp;&nbsp;- Jenis 1 (Lingkaran, d=40cm, berat 800g)<br>
+                &nbsp;&nbsp;- Jenis 2 (Persegi Panjang 60x40cm, berat 1.200g, 4 sudut)<br>
+                &nbsp;&nbsp;- Jenis 3 (Segi Banyak, berat 1.500g)<br>
+                • Maksimal kemasan kardus: Berat &le; 10 kg (10.000 gram).`,
+
+            10: `<strong>STIMULUS MATEMATIKA 10: Pengolahan Data & Grafik Diagram Batang</strong><br><br>
+                • <strong>Screen Time Siska:</strong> Batas hari sekolah = 2 jam. Total penggunaan Siska pada hari sekolah = 7 jam (TV 1j, Komputer 0,5j, Laptop 1j, Game 2,5j, HP 2j).<br>
+                • <strong>Kantin Sekolah:</strong> Penjualan Telur Gulung = 23 pembeli.<br>
+                • <strong>Gunung Berapi Aktif:</strong> Setiap gunung dianggap menghasilkan 50 MW. Tonga (9 gunung = 450 MW), Rusia (27 gunung = 1.350 MW), Papua Nugini (13 gunung = 650 MW).<br>
+                • <strong>Karya Wisata Bus:</strong> Kapasitas 72 orang. Kelas 6A (25 siswa), 6B (24 siswa), Kelas 6C = 72 - 25 - 24 = 23 siswa.`
+        };
+
+        // Complete 30 Questions Bahasa Indonesia
+        const questionsIndo = [
+            {
+                id: 1, stimulusId: 1,
+                title: "SOAL 1: Menentukan bagan kerangka isi/informasi dalam teks",
+                question: "Bagan manakah yang sesuai untuk menggambarkan hutan mangrove pada teks?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Bagan A: Lokasi (Kulon Progo) | Zona Menarik (Ayunan) | Contoh Satwa (Kepiting)" },
+                    { id: "B", text: "Bagan B: Lokasi (Dekat Pantai Congot) | Zona Menarik (Jembatan Api-Api) | Contoh Satwa (Udang)" },
+                    { id: "C", text: "Bagan C: Lokasi (Kulon Progo) | Zona Menarik (Menara Pandang) | Contoh Satwa (Biawak)" },
+                    { id: "D", text: "Bagan D: Lokasi (Dekat Pantai Congot) | Zona Menarik (Gazebo) | Contoh Satwa (Burung Kuntul)" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Bagan Dua (Opsi B) tepat karena mencocokkan Lokasi (Dekat Pantai Congot), Zona Menarik (Jembatan Api-Api), dan Contoh Satwa (Udang) secara presisi."
+            },
+            {
+                id: 2, stimulusId: 1,
+                title: "SOAL 2: Menentukan makna ungkapan dalam teks",
+                question: "Apa maksud istilah \"permata tersembunyi\" dalam teks? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Letak yang tidak mudah dijangkau, tetapi ramai dikunjungi" },
+                    { id: "opt2", text: "Tempat yang indah, tetapi belum dikenal banyak orang" },
+                    { id: "opt3", text: "Lokasi yang jarang diketahui, tetapi memiliki banyak spot menarik" }
+                ],
+                correctAnswer: ["opt2", "opt3"],
+                pembahasan: "\"Permata tersembunyi\" berarti tempat yang indah dan menarik, tetapi belum banyak diketahui orang (Opsi 2 dan 3)."
+            },
+            {
+                id: 3, stimulusId: 1,
+                title: "SOAL 3: Menentukan kesesuaian antara judul dengan isi teks",
+                question: "Tentukan Benar atau Salah untuk setiap pendapat tokoh berikut berdasarkan kesesuaian isi teks!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Amara: Isi teks hanya fokus membahas Hutan Mangrove Kulon Progo" },
+                    { id: "s2", text: "Bima: Judul lebih cocok jika membahas beberapa hutan mangrove lain juga" },
+                    { id: "s3", text: "Jena: Hutan Kulon Progo dapat mewakili seluruh hutan mangrove di Indonesia" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Benar", s3: "Salah" },
+                pembahasan: "Amara (Benar) & Bima (Benar) karena teks fokus di Kulon Progo saja. Jena (Salah)."
+            },
+            {
+                id: 4, stimulusId: 2,
+                title: "SOAL 4: Menyusun Kesimpulan untuk menentukan relevansi isi dalam teks",
+                question: "Mengapa bakwan dikatakan sebagai makanan yang unik? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Memiliki isi yang sama dengan makanan Jepang" },
+                    { id: "opt2", text: "Perkembangannya dipengaruhi budaya negara lain" },
+                    { id: "opt3", text: "Ditemukan di berbagai daerah dengan sebutan berbeda" }
+                ],
+                correctAnswer: ["opt2", "opt3"],
+                pembahasan: "Bakwan unik karena dipengaruhi budaya negara lain dan memiliki nama sebutan berbeda di tiap daerah."
+            },
+            {
+                id: 5, stimulusId: 2,
+                title: "SOAL 5: Menyimpulkan perbedaan informasi dalam teks",
+                question: "Klasifikasikan pernyataan isi bakwan ini apakah terjadi Sebelum atau Sesudah terpengaruh budaya Jepang!",
+                type: "table_custom",
+                statements: [
+                    { id: "p1", text: "Berisi aneka sayuran" },
+                    { id: "p2", text: "Isi hanya daging" },
+                    { id: "p3", text: "Isinya ditambahkan udang, sosis, atau bakso" }
+                ],
+                optionsHeader: ["Sebelum", "Sesudah"],
+                correctAnswer: { p1: "Sesudah", p2: "Sebelum", p3: "Sesudah" },
+                pembahasan: "Awalnya (Sebelum) hanya terbuat dari daging. Kini (Sesudah), berisi sayuran dan bisa ditambah udang/sosis."
+            },
+            {
+                id: 6, stimulusId: 3,
+                title: "SOAL 6: Menyimpulkan nilai-nilai yang terdapat dalam teks",
+                question: "Nilai moral apa saja yang diperoleh dari cerita Si Biru Kesayangan? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Bebas memilih gaya hidup" },
+                    { id: "opt2", text: "Peduli lingkungan itu penting" },
+                    { id: "opt3", text: "Hal kecil bisa jadi langkah baik" }
+                ],
+                correctAnswer: ["opt2", "opt3"],
+                pembahasan: "Cerita mengajarkan pentingnya peduli lingkungan dan tindakan kecil seperti membawa botol minum adalah langkah baik."
+            },
+            {
+                id: 7, stimulusId: 3,
+                title: "SOAL 7: Menjelaskan makna ungkapan atau idiom dalam teks",
+                question: "Makna ungkapan \"tutup mata\" berdasarkan dialog yang diucapkan Salma adalah...",
+                type: "single",
+                options: [
+                    { id: "A", text: "Mengabaikan masalah sampah di sekitar" },
+                    { id: "B", text: "Melupakan berbagai isu lingkungan" },
+                    { id: "C", text: "Menumpuk plastik-plastik sisa pakai" },
+                    { id: "D", text: "Meningkatkan kasus pencemaran tanah" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Ungkapan 'tutup mata' berarti mengabaikan atau tidak peduli terhadap masalah di sekitar."
+            },
+            {
+                id: 8, stimulusId: 3,
+                title: "SOAL 8: Merefleksi peristiwa dalam teks dengan kehidupan sehari-hari",
+                question: "Apa yang sebaiknya Rania lakukan untuk memulai aksi peduli lingkungan berdasarkan cerita?",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Menggunakan botol minum isi ulang setiap hari" },
+                    { id: "s2", text: "Membeli botol minum isi ulang untuk teman-temannya" },
+                    { id: "s3", text: "Mengajak teman-teman membatasi pembelian minuman kemasan" }
+                ],
+                correctAnswer: { s1: "Sesuai", s2: "Sesuai", s3: "Sesuai" },
+                pembahasan: "Seluruh tindakan (menggunakan botol sendiri, membelikan teman, mengajak membatasi kemasan) sejalan dengan kepedulian lingkungan."
+            },
+            {
+                id: 9, stimulusId: 4,
+                title: "SOAL 9: Menentukan informasi tersurat pada teks",
+                question: "Mengapa hujan meteor tidak berbahaya?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Meteor dapat berpindah" },
+                    { id: "B", text: "Hanya muncul saat langit cerah" },
+                    { id: "C", text: "Hanya muncul saat hujan" },
+                    { id: "D", text: "Akan habis terbakar oleh atmosfer langit" }
+                ],
+                correctAnswer: "D",
+                pembahasan: "Meteor tidak berbahaya karena terbakar habis akibat gesekan dengan lapisan udara/atmosfer bumi."
+            },
+            {
+                id: 10, stimulusId: 4,
+                title: "SOAL 10: Menyusun inferensi atau kesimpulan isi teks",
+                question: "Berdasarkan cerita, hal apa saja yang dapat membuat tokoh \"Aku\" senang? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Menonton hujan meteor dengan ayahnya" },
+                    { id: "opt2", text: "Menulis buku harian sambil melihat meteor" },
+                    { id: "opt3", text: "Langit cerah ketika menonton hujan meteor" }
+                ],
+                correctAnswer: ["opt1", "opt3"],
+                pembahasan: "Tokoh 'Aku' senang menonton bersama ayah dan berharap langit cerah agar meteor terlihat jelas."
+            },
+            {
+                id: 11, stimulusId: 5,
+                title: "SOAL 11: Menentukan informasi tersurat pada teks",
+                question: "Bentuk apa yang bisa ditiru Giga saat bermain dengan Heksagonal?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Bunga" },
+                    { id: "B", text: "Pohon cemara" },
+                    { id: "C", text: "Gunung" },
+                    { id: "D", text: "Atap rumah" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Teks menyebutkan secara eksplisit bahwa saat bermain dengan heksagonal, Giga menirukan bentuk bunga."
+            },
+            {
+                id: 12, stimulusId: 5,
+                title: "SOAL 12: Menuliskan informasi tersurat pada teks",
+                question: "Apa yang dibuat Giga saat bermain bersama Pasukan Kotak? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Roket" },
+                    { id: "opt2", text: "Menara" },
+                    { id: "opt3", text: "Bendera" }
+                ],
+                correctAnswer: ["opt1", "opt2"],
+                pembahasan: "Saat bermain dengan Pasukan Kotak, Giga menirukan bentuk roket, ikan, dan menara (Opsi 1 dan 2)."
+            },
+            {
+                id: 13, stimulusId: 6,
+                title: "SOAL 13: Menentukan informasi tersurat pada teks",
+                question: "Bagaimana cara keluarga Adit dan Danu pergi ke Pulau Kemaro saat pertama kalinya?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Menyeberangi jembatan ponton dengan mobil" },
+                    { id: "B", text: "Melewati jembatan ponton dengan berjalan kaki" },
+                    { id: "C", text: "Menggunakan kapal dari bawah jembatan Musi" },
+                    { id: "D", text: "Melewati jembatan Musi dengan berjalan kaki" }
+                ],
+                correctAnswer: "C",
+                pembahasan: "Kunjungan pertama kali mereka menggunakan kapal dari bawah jembatan Musi."
+            },
+            {
+                id: 14, stimulusId: 6,
+                title: "SOAL 14: Menyusun kesimpulan berdasarkan unsur intrinsik",
+                question: "Apa peristiwa yang membuat Danu dan Adit berpikir bahwa bersyukur adalah hal penting?",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Pertunjukan barongsai ditiadakan sehingga memilih berkeliling pulau" },
+                    { id: "opt2", text: "Keluarga Danu berjalan kaki melewati jembatan ponton meski hujan" },
+                    { id: "opt3", text: "Penerbangan lampion dihilangkan, mereka memilih makan makanan khas Imlek" }
+                ],
+                correctAnswer: ["opt1", "opt3"],
+                pembahasan: "Acara utama batal karena hujan deras, namun mereka tetap menikmati kegiatan alternatif dengan berkeliling dan makan makanan khas."
+            },
+            {
+                id: 15, stimulusId: 6,
+                title: "SOAL 15: Merefleksikan pengetahuan baru dari teks",
+                question: "Berdasarkan cerita, apa yang akan kamu lakukan jika rencana berlibur ke pantai batal akibat hujan?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Berlapang dada dan memilih menyusun rencana menyenangkan lain di rumah" },
+                    { id: "B", text: "Merasa sedih sehingga memilih melihat hujan dari jendela" },
+                    { id: "C", text: "Bersikap biasa saja tanpa aktivitas apapun" },
+                    { id: "D", text: "Melanjutkan tidur sembari berharap hujan reda" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Sesuai pesan cerita: bersikap lapang dada dan mencari kegiatan alternatif yang bermanfaat."
+            },
+            {
+                id: 16, stimulusId: 7,
+                title: "SOAL 16: Menjelaskan ide pokok atau fokus utama teks",
+                question: "Apa yang menjadi fokus utama dalam teks Kota Berkelanjutan?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Manfaat menggunakan kendaraan tenaga listrik" },
+                    { id: "B", text: "Pentingnya kota berkelanjutan untuk masa depan" },
+                    { id: "C", text: "Fasilitas publik yang tersedia di kota berkelanjutan" },
+                    { id: "D", text: "Cara pengolahan sampah di kota berkelanjutan" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Teks secara keseluruhan menguraikan ciri dan pentingnya membangun kota berkelanjutan untuk masa depan."
+            },
+            {
+                id: 17, stimulusId: 7,
+                title: "SOAL 17: Menyimpulkan isi atau substansi teks",
+                question: "Hasil apa yang diharapkan dari sistem pengolahan sampah yang baik?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Kota menjadi bersih dan sehat" },
+                    { id: "B", text: "Air menjadi melimpah" },
+                    { id: "C", text: "Udara menjadi sejuk" },
+                    { id: "D", text: "Waktu menjadi efisien" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Pengelolaan sampah daur ulang menciptakan kota yang bersih, sehat, dan nyaman."
+            },
+            {
+                id: 18, stimulusId: 7,
+                title: "SOAL 18: Menilai kesesuaian antara ilustrasi dengan isi teks",
+                question: "Mengapa ciri-ciri kota berkelanjutan belum nampak pada gambar ilustrasi? (Centang jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Tidak ada gambar ruang terbuka hijau seperti taman" },
+                    { id: "opt2", text: "Tidak ada gambar alat transportasi ramah lingkungan bertenaga listrik" },
+                    { id: "opt3", text: "Tidak ada gambar manusia yang sedang melakukan aktivitas di jalan" }
+                ],
+                correctAnswer: ["opt1", "opt2", "opt3"],
+                pembahasan: "Gambar ilustrasi di halaman 8-9 PDF belum menampilkan RTH, transportasi listrik, maupun pejalan kaki yang aktif."
+            },
+            {
+                id: 19, stimulusId: 8,
+                title: "SOAL 19: Menentukan informasi tersurat pada teks",
+                question: "Siapa yang memotong rambut Rara saat ritual ruwatan?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Ketua adat" },
+                    { id: "B", text: "Ibu Rara" },
+                    { id: "C", text: "Ayah Rara" },
+                    { id: "D", text: "Tukang cukur" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Dalam teks dijelaskan bahwa Ketua adat yang akan memotong rambut gimbal Rara."
+            },
+            {
+                id: 20, stimulusId: 8,
+                title: "SOAL 20: Menyimpulkan perasaan dan sifat tokoh dalam teks",
+                question: "Bagaimana perasaan Rara setelah mendengar penjelasan Ayah mengenai kondisi keuangan?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Lega" },
+                    { id: "B", text: "Puas" },
+                    { id: "C", text: "Ceria" },
+                    { id: "D", text: "Ikhlas" }
+                ],
+                correctAnswer: "D",
+                pembahasan: "Rara sadar, meminta maaf, dan ikhlas mengganti permintaannya menjadi buku cerita."
+            },
+            {
+                id: 21, stimulusId: 8,
+                title: "SOAL 21: Merefleksikan pengetahuan baru dari teks",
+                question: "Apa yang sebaiknya kamu lakukan jika ingin punya barang baru berdasarkan pelajaran cerita Rara?",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Bertanya kepada ayah dan ibu apakah punya uang atau tidak" },
+                    { id: "opt2", text: "Meminta ayah dan ibu langsung membelikan barang itu" },
+                    { id: "opt3", text: "Memikirkan apakah barang itu perlu atau tidak dimiliki saat ini" }
+                ],
+                correctAnswer: ["opt1", "opt3"],
+                pembahasan: "Menenggang rasa pada orang tua (bertanya ketersediaan uang) serta menimbang skala kebutuhan barang."
+            },
+            {
+                id: 22, stimulusId: 9,
+                title: "SOAL 22: Menentukan makna peribahasa dalam teks",
+                question: "Apa maksud Erni mengutip \"bersakit-sakit dahulu, bersenang-senang kemudian\"?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Menginformasikan Arul bahwa ia harus giat belajar lagi" },
+                    { id: "B", text: "Memperjelas ucapan Erni tentang nilai bagus" },
+                    { id: "C", text: "Menasihati Arul agar tidak sombong" },
+                    { id: "D", text: "Memberitahukan Arul bahwa ia harus mau berusaha belajar keras jika ingin nilai bagus lagi" }
+                ],
+                correctAnswer: "D",
+                pembahasan: "Peribahasa bermakna berusaha keras lebih dulu demi memperoleh keberhasilan nantinya."
+            },
+            {
+                id: 23, stimulusId: 9,
+                title: "SOAL 23: Menyimpulkan perubahan karakter tokoh",
+                question: "Bagaimana perubahan sikap Arul setelah menyadari nilainya jelek?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Arul menjadi lebih giat untuk belajar sendiri di rumah" },
+                    { id: "B", text: "Arul akhirnya mau belajar bersama teman-temannya" },
+                    { id: "C", text: "Arul berjanji belajar lebih giat kepada teman-temannya" },
+                    { id: "D", text: "Arul merasa akan lebih mudah ujian" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Arul akhirnya menyadari kesalahannya dan mengangguk setuju untuk belajar bersama teman-temannya."
+            },
+            {
+                id: 24, stimulusId: 9,
+                title: "SOAL 24: Merefleksikan nilai keteladanan",
+                question: "Apa yang bisa dilakukan Riza agar nilainya bagus berdasarkan pengalaman Arul?",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Belajar kelompok bersama teman-teman agar ada yang mengajari materi sulit" },
+                    { id: "s2", text: "Meyakini kemampuan diri dan tetap menjalankan hobi bermain sepak bola" },
+                    { id: "s3", text: "Bertanya ketika guru menjelaskan pelajaran agar lebih yakin saat ujian" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Salah", s3: "Benar" },
+                pembahasan: "Belajar kelompok & bertanya saat belum paham (Benar). Mengabaikan belajar demi sepak bola (Salah)."
+            },
+            {
+                id: 25, stimulusId: 10,
+                title: "SOAL 25: Menentukan kosakata yang sesuai dalam teks",
+                question: "Frasa mana yang menunjukkan bahwa Yunus adalah seorang nelayan? (Centang jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Mengarung laut" },
+                    { id: "opt2", text: "Melempar jala" },
+                    { id: "opt3", text: "Memperbaiki perahu" }
+                ],
+                correctAnswer: ["opt1", "opt2"],
+                pembahasan: "'Mengarung laut' dan 'melempar jala' secara langsung menggambarkan aktivitas pekerjaan nelayan."
+            },
+            {
+                id: 26, stimulusId: 10,
+                title: "SOAL 26: Menyimpulkan perubahan karakter tokoh",
+                question: "Bagaimana sikap Kamal setelah mendapat teguran dan dipaksa ikut melaut oleh Yunus?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Tersadar untuk rajin melaut setiap hari" },
+                    { id: "B", text: "Bersemangat melaut bersama para warga" },
+                    { id: "C", text: "Tergerak untuk serius memperbaiki kapal" },
+                    { id: "D", text: "Berusaha keras membuktikan pada warga" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Kamal melawan malasnya, ikut melaut setiap hari, hingga akhirnya sanggup melaut sendiri."
+            },
+            {
+                id: 27, stimulusId: 10,
+                title: "SOAL 27: Menentukan respon emosional terhadap peristiwa",
+                question: "Tentukan kesesuaian pendapat tokoh Simon, Johan, dan Maria tentang akhir cerita Yunus & Kamal!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Johan: Yunus terlalu baik hati pada Kamal dan tetangga" },
+                    { id: "s2", text: "Simon: Yunus mau menemani Kamal sampai terbiasa melaut sendiri" },
+                    { id: "s3", text: "Maria: Yunus menegur keras ketika perilaku Kamal sudah kelewatan" }
+                ],
+                correctAnswer: { s1: "Tidak Sesuai", s2: "Sesuai", s3: "Tidak Sesuai" },
+                pembahasan: "Pendapat Simon paling sesuai dengan bagian akhir cerita di mana ketelatenan Yunus membuah hasil."
+            },
+            {
+                id: 28, stimulusId: 10,
+                title: "SOAL 28: Menentukan informasi tersurat dalam teks",
+                question: "Siapa tokoh yang sangat suka menggambar dalam cerita \"Mama, Aku Bukan Dia\"?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Albert" },
+                    { id: "B", text: "Giffari" },
+                    { id: "C", text: "Lianne" },
+                    { id: "D", text: "Amber" }
+                ],
+                correctAnswer: "C",
+                pembahasan: "Teks diawali dengan perkenalan tokoh Lianne yang menyatakan dirinya sangat suka menggambar."
+            },
+            {
+                id: 29, stimulusId: 10,
+                title: "SOAL 29: Menyimpulkan sifat atau karakter tokoh dalam teks",
+                question: "Bagaimana sifat yang ditunjukkan Lianne pada cerita tersebut?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Rajin belajar matematika" },
+                    { id: "B", text: "Gemar olahraga basket" },
+                    { id: "C", text: "Pantang menyerah, dibuktikan dengan terus giat mengasah bakat menggambarnya" },
+                    { id: "D", text: "Lapang dada menerima kekurangan" }
+                ],
+                correctAnswer: "C",
+                pembahasan: "Lianne pantang menyerah mengasah bakat lukisnya hingga memenangkan lomba."
+            },
+            {
+                id: 30, stimulusId: 10,
+                title: "SOAL 30: Menentukan respon emosional dari konflik teks",
+                question: "Tentukan Setuju atau Tidak Setuju perasaan Dinda ketika Lianne selalu dibanding-bandingkan oleh Mamanya!",
+                type: "table_custom",
+                statements: [
+                    { id: "s1", text: "Sedih, karena Lianne selalu tidak diakui keunikannya oleh mamanya" },
+                    { id: "s2", text: "Marah, karena teman-temannya selalu lebih unggul darinya" },
+                    { id: "s3", text: "Kecewa, karena ia tidak bisa menjadi dirinya sendiri di depan mamanya" }
+                ],
+                optionsHeader: ["Setuju", "Tidak Setuju"],
+                correctAnswer: { s1: "Setuju", s2: "Tidak Setuju", s3: "Setuju" },
+                pembahasan: "Perasaan Sedih (Setuju) & Kecewa (Setuju) relevan dengan emosi Lianne. Marah pada keunggulan teman (Tidak Setuju)."
+            }
+        ];
+
+        // Complete 30 Questions Matematika (dari matik.pdf)
+        const questionsMtk = [
+            {
+                id: 1, stimulusId: 1,
+                title: "SOAL 1: Representasi Bagian Objek Utuh (Pecahan)",
+                question: "Bangun datar merupakan potongan bagian dari objek utuh. Tentukan Benar atau Salah pada setiap susunan gambar!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Gambar 1: Membentuk 6 bagian sama besar yang simetris" },
+                    { id: "s2", text: "Gambar 2: Membentuk potongan dengan bagian tidak sama besar" },
+                    { id: "s3", text: "Gambar 3: Membentuk 6 bagian potongan utuh yang tepat" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Salah", s3: "Benar" },
+                pembahasan: "Pernyataan 1 BENAR, Pernyataan 2 SALAH (karena tidak membentuk 6 bagian sama besar), Pernyataan 3 BENAR."
+            },
+            {
+                id: 2, stimulusId: 2,
+                title: "SOAL 2: Mengurutkan Bilangan & Kapasitas Listrik",
+                question: "Jenis pembangkit listrik mana yang menghasilkan listrik TERBESAR dari total 40.000 MW?",
+                type: "single",
+                options: [
+                    { id: "A", text: "PLTA (1/2 dari total)" },
+                    { id: "B", text: "PLTG (5% dari total)" },
+                    { id: "C", text: "PLTU (0,075 dari total)" },
+                    { id: "D", text: "PLTGU (30% dari total)" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "PLTA = 1/2 × 40.000 = 20.000 MW (Paling Besar). PLTGU = 12.000 MW, PLTU = 2.000 MW, PLTG = 3.000 MW."
+            },
+            {
+                id: 3, stimulusId: 3,
+                title: "SOAL 3: Faktor Bilangan & Pembagian Karung Beras",
+                question: "Sebanyak 150 karung beras dibagikan merata. Berapa banyak keluarga yang mungkin menerima? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "30 keluarga" },
+                    { id: "opt2", text: "25 keluarga" },
+                    { id: "opt3", text: "20 keluarga" }
+                ],
+                correctAnswer: ["opt1", "opt2"],
+                pembahasan: "150 dapat dibagi habis oleh 30 (5 karung/keluarga) dan 25 (6 karung/keluarga). 150 tidak habis dibagi 20."
+            },
+            {
+                id: 4, stimulusId: 3,
+                title: "SOAL 4: Operasi Hitung Pembagian & Sisa Karung",
+                question: "Persediaan 1.500 kg beras dikemas dalam Karung B (3 kg) untuk 450 keluarga. Berapa karung beras yang tersisa?",
+                type: "single",
+                options: [
+                    { id: "A", text: "500 karung" },
+                    { id: "B", text: "300 karung" },
+                    { id: "C", text: "150 karung" },
+                    { id: "D", text: "50 karung" }
+                ],
+                correctAnswer: "D",
+                pembahasan: "Total karung = 1.500 kg / 3 kg = 500 karung. Dibagikan 450 karung. Sisa = 500 - 450 = 50 karung."
+            },
+            {
+                id: 5, stimulusId: 3,
+                title: "SOAL 5: Memodelkan Kalimat Matematika",
+                question: "1 karung kentang 100 kg tersisa 4 kg. Tiap 1 kg jadi 6 bungkus keripik. Tiap kardus muat 12 bungkus. Perhitungan kardus yang tepat adalah...",
+                type: "single",
+                options: [
+                    { id: "A", text: "(100 - 4) × 6 : 12" },
+                    { id: "B", text: "(100 - 4) : 6 × 12" },
+                    { id: "C", text: "(100 + 4) × 6 : 12" },
+                    { id: "D", text: "(100 + 4) : 6 × 12" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Kentang diolah = (100 - 4) kg. Jumlah bungkus = (100 - 4) × 6. Jumlah kardus = (100 - 4) × 6 : 12."
+            },
+            {
+                id: 6, stimulusId: 4,
+                title: "SOAL 6: Operasi Hitung Campuran Pecahan & Bilangan Asli",
+                question: "Hasil dari (3/25 × 3 7/6) + (135 : 15) adalah...",
+                type: "single",
+                options: [
+                    { id: "A", text: "2 1/2" },
+                    { id: "B", text: "9 1/30" },
+                    { id: "C", text: "9 1/2" },
+                    { id: "D", text: "32/225" }
+                ],
+                correctAnswer: "C",
+                pembahasan: "(3/25 × 25/6) + 9 = 3/6 + 9 = 1/2 + 9 = 9 1/2."
+            },
+            {
+                id: 7, stimulusId: 4,
+                title: "SOAL 7: Evaluasi Logika Diagram Alir",
+                question: "Tentukan Benar atau Salah pada setiap pernyataan berdasarkan diagram alir program!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Jika memasukkan bilangan ganjil (contoh: 1), hasil akhir adalah bilangan ganjil" },
+                    { id: "s2", text: "Hasil akhir adalah nol jika bilangan yang dimasukkan adalah 0" },
+                    { id: "s3", text: "Jika memasukkan bilangan genap (contoh: 2), hasil akhir kelipatan 2" }
+                ],
+                correctAnswer: { s1: "Salah", s2: "Benar", s3: "Benar" },
+                pembahasan: "S1: (1+5)=6 -> 6/3=2 -> 2*2=4 (Genap) [SALAH]. S2: (0+5)=5 -> 5-5=0 -> 0*2=0 [BENAR]. S3: (2+5)=7 -> 7-5=2 -> 2*2=4 [BENAR]."
+            },
+            {
+                id: 8, stimulusId: 5,
+                title: "SOAL 8: Persamaan Sederhana Magnet",
+                question: "Ada 25 benda (12 feromagnetik, 7 paramagnetik, sisanya diamagnetik). Jika ditambah hingga menjadi 9 diamagnetik, berapa yang ditambah?",
+                type: "single",
+                options: [
+                    { id: "A", text: "3 benda" },
+                    { id: "B", text: "5 benda" },
+                    { id: "C", text: "9 benda" },
+                    { id: "D", text: "15 benda" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Awal diamagnetik = 25 - 12 - 7 = 6 benda. Ditambah menjadi 9 benda -> 9 - 6 = 3 benda baru."
+            },
+            {
+                id: 9, stimulusId: 5,
+                title: "SOAL 9: Pengurangan Daya Kincir Air ( >150 Watt)",
+                question: "Daya terpakai 2 hari (A: 188-42=146W, B: 164-13=151W, C: 192-30=162W). Mana yang terpakai > 150 Watt? (Centang jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Kincir A (146 Watt)" },
+                    { id: "opt2", text: "Kincir B (151 Watt)" },
+                    { id: "opt3", text: "Kincir C (162 Watt)" }
+                ],
+                correctAnswer: ["opt2", "opt3"],
+                pembahasan: "Kincir B (151W) dan Kincir C (162W) lebih dari 150 Watt. Kincir A hanya 146W."
+            },
+            {
+                id: 10, stimulusId: 6,
+                title: "SOAL 10: Persamaan Sederhana Porsi Salmon",
+                question: "1 porsi salmon mengandung 20 gram protein. Jika dalam satu sajian terdapat 80 gram protein, berapa porsi yang disajikan?",
+                type: "single",
+                options: [
+                    { id: "A", text: "8 porsi" },
+                    { id: "B", text: "6 porsi" },
+                    { id: "C", text: "4 porsi" },
+                    { id: "D", text: "2 porsi" }
+                ],
+                correctAnswer: "C",
+                pembahasan: "Jumlah porsi = 80 gram / 20 gram = 4 porsi."
+            },
+            {
+                id: 11, stimulusId: 6,
+                title: "SOAL 11: Evaluasi Persediaan Bahan Keju 5 Resep",
+                question: "Persediaan: 2.000ml susu, 140ml cuka, 16g garam. Untuk 5 resep butuh (2.000ml susu, 100ml cuka, 20g garam). Tentukan Benar/Salah!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Seharusnya disediakan garam sebanyak 20 gram" },
+                    { id: "s2", text: "Terdapat kekurangan cuka sebanyak 40 ml" },
+                    { id: "s3", text: "Tidak perlu tambahan susu sapi segar" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Salah", s3: "Benar" },
+                pembahasan: "Garam butuh 20g (persediaan 16g -> kurang 4g) [BENAR]. Cuka butuh 100ml (persediaan 140ml -> kelebihan 40ml) [SALAH]. Susu 2000ml pas [BENAR]."
+            },
+            {
+                id: 12, stimulusId: 7,
+                title: "SOAL 12: KPK Pertemuan Laundry Koin",
+                question: "Linda (tiap 8 hari) & Vidya (tiap 6 hari) bertemu 10 Agustus 2024. Kapan saja mereka akan bertemu lagi? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "3 September 2024" },
+                    { id: "opt2", text: "27 September 2024" },
+                    { id: "opt3", text: "21 Oktober 2024" }
+                ],
+                correctAnswer: ["opt1", "opt2", "opt3"],
+                pembahasan: "KPK(8,6) = 24 hari. Pertemuan berikutnya: +24 hari (3 Sept), +48 hari (27 Sept), +72 hari (21 Okt). Semua benar."
+            },
+            {
+                id: 13, stimulusId: 7,
+                title: "SOAL 13: Ciri-Ciri Geometri Bangun Huruf E",
+                question: "Tentukan Benar atau Salah mengenai ciri-ciri geometri bidang datar berbentuk huruf E!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Memiliki 12 garis sisi (6 mendatar & 6 tegak)" },
+                    { id: "s2", text: "Terdapat 12 titik sudut" },
+                    { id: "s3", text: "Terdapat 10 sudut siku-siku" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Benar", s3: "Salah" },
+                pembahasan: "Huruf E memiliki 12 sisi (Benar), 12 titik sudut (Benar), namun hanya 8 sudut siku-siku (Salah)."
+            },
+            {
+                id: 14, stimulusId: 7,
+                title: "SOAL 14: Identifikasi Bangun Datar Penyusun",
+                question: "Tentukan Benar atau Salah komposisi gabungan bangun penyusun segi banyak!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Dapat dibentuk dari 3 segitiga dan 1 persegi panjang" },
+                    { id: "s2", text: "Dapat dibentuk dari 4 segitiga dan 1 trapesium" },
+                    { id: "s3", text: "Dapat dibentuk dari 5 segitiga dan 1 layang-layang" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Benar", s3: "Salah" },
+                pembahasan: "Komposisi 1 & 2 dapat membentuk segi banyak tersebut secara tepat tanpa beririsan."
+            },
+            {
+                id: 15, stimulusId: 7,
+                title: "SOAL 15: Jumlah Kubus Pada Konstruksi Bangun Ruang",
+                question: "Berdasarkan tingkatannya (Tingkat 1=1, T2=1, T3=1, T4=3, T5=9), berapa jumlah semua kubus penyusun?",
+                type: "single",
+                options: [
+                    { id: "A", text: "12 kubus" },
+                    { id: "B", text: "13 kubus" },
+                    { id: "C", text: "14 kubus" },
+                    { id: "D", text: "15 kubus" }
+                ],
+                correctAnswer: "D",
+                pembahasan: "Total kubus = 1 + 1 + 1 + 3 + 9 = 15 kubus."
+            },
+            {
+                id: 16, stimulusId: 8,
+                title: "SOAL 16: Kelogisan Satuan Baku Panjang",
+                question: "Manakah pengukuran panjang yang paling tepat dan masuk akal? (Centang jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "Tinggi tiang bendera sekolah adalah 8 meter" },
+                    { id: "opt2", text: "Jarak rumah Budi ke sekolah adalah 30 milimeter" },
+                    { id: "opt3", text: "Lebar buku tulis ini sekitar 20 centimeter" }
+                ],
+                correctAnswer: ["opt1", "opt3"],
+                pembahasan: "Tiang bendera (8m) & lebar buku (20cm) sangat masuk akal. Jarak rumah biasanya km/m, bukan mm."
+            },
+            {
+                id: 17, stimulusId: 8,
+                title: "SOAL 17: Representasi Ketinggian Volume Botol",
+                question: "Urutan isi air botol: C (540ml) > B (530ml) > D (470ml) > A (450ml). Ketinggian permukaan air paling tinggi berada pada...",
+                type: "single",
+                options: [
+                    { id: "A", text: "Botol A" },
+                    { id: "B", text: "Botol B" },
+                    { id: "C", text: "Botol C" },
+                    { id: "D", text: "Botol D" }
+                ],
+                correctAnswer: "C",
+                pembahasan: "Botol C memiliki volume terbanyak (540 ml) sehingga permukaan airnya paling tinggi."
+            },
+            {
+                id: 18, stimulusId: 8,
+                title: "SOAL 18: Kesetimbangan Neraca Penimbangan Bahan Cireng",
+                question: "Bahan: Tapioka 1250g, Terigu 500g, Ayam 1500g, Bawang 250g, Cabai 250g. Tentukan Benar/Salah posisi neraca!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Neraca seimbang: Bawang putih (250g) dan Cabai merah (250g)" },
+                    { id: "s2", text: "Tepung terigu (500g) lebih berat dari Ayam suwir (1500g)" },
+                    { id: "s3", text: "Tepung terigu (500g) lebih ringan dari Tepung tapioka (1250g)" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Salah", s3: "Benar" },
+                pembahasan: "S1 BENAR (250g = 250g). S2 SALAH (500g < 1500g). S3 BENAR (500g < 1250g)."
+            },
+            {
+                id: 19, stimulusId: 8,
+                title: "SOAL 19: Durasi Waktu Memasak pada Jam Analog",
+                question: "Bu Nina mulai memasak pukul 08.15 dan selesai pukul 10.25. Berapa lama Bu Nina memasak?",
+                type: "single",
+                options: [
+                    { id: "A", text: "2 jam 10 menit" },
+                    { id: "B", text: "2 jam 40 menit" },
+                    { id: "C", text: "3 jam 10 menit" },
+                    { id: "D", text: "3 jam 40 menit" }
+                ],
+                correctAnswer: "A",
+                pembahasan: "Durasi = 10.25 - 08.15 = 2 jam 10 menit."
+            },
+            {
+                id: 20, stimulusId: 9,
+                title: "SOAL 20: Menghitung Keliling Bangun Segi Banyak",
+                question: "Panjang sisi-sisi bangun: 12cm, 10cm, 10cm, 4cm, 4cm, 20cm. Berapakah keliling totalnya?",
+                type: "single",
+                options: [
+                    { id: "A", text: "46 cm" },
+                    { id: "B", text: "50 cm" },
+                    { id: "C", text: "56 cm" },
+                    { id: "D", text: "60 cm" }
+                ],
+                correctAnswer: "D",
+                pembahasan: "Keliling = 12 + 10 + 10 + 4 + 4 + 20 = 60 cm."
+            },
+            {
+                id: 21, stimulusId: 9,
+                title: "SOAL 21: Menghitung Luas Gabungan Segitiga",
+                question: "Sebuah segi banyak tersusun dari 10 segitiga identik. Jika luas 1 segitiga = 16 cm², berapakah luas totalnya?",
+                type: "single",
+                options: [
+                    { id: "A", text: "176 cm²" },
+                    { id: "B", text: "160 cm²" },
+                    { id: "C", text: "144 cm²" },
+                    { id: "D", text: "128 cm²" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Luas total = 10 segitiga × 16 cm² = 160 cm²."
+            },
+            {
+                id: 22, stimulusId: 9,
+                title: "SOAL 22: Konsep Luas Persegi Panjang & Pilihan Lukisan",
+                question: "Jimmi menyediakan tempat dinding seluas 4.800 cm². Kombinasi 2 lukisan mana yang muat (Luas &le; 4.800 cm²)?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Lukisan A (60x60) & B (90x80)" },
+                    { id: "B", text: "Lukisan C (40x80) & D (40x40)" },
+                    { id: "C", text: "Lukisan E (60x80) & A (60x60)" },
+                    { id: "D", text: "Lukisan B (90x80) & D (40x40)" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Luas C + D = (40×80) + (40×40) = 3.200 + 1.600 = 4.800 cm² (Pas & Muat)."
+            },
+            {
+                id: 23, stimulusId: 9,
+                title: "SOAL 23: Ciri Sudut Keset Jenis 2",
+                question: "Keset Jenis 2 berbentuk persegi panjang. Jika diberi hiasan pada setiap sudutnya, berapa banyak hiasan?",
+                type: "single",
+                options: [
+                    { id: "A", text: "2 hiasan" },
+                    { id: "B", text: "4 hiasan" },
+                    { id: "C", text: "5 hiasan" },
+                    { id: "D", text: "6 hiasan" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Persegi panjang memiliki 4 titik sudut, sehingga dipasang 4 hiasan."
+            },
+            {
+                id: 24, stimulusId: 9,
+                title: "SOAL 24: Evaluasi Pengemasan Kardus Keset (&le; 10 kg)",
+                question: "Berat: Jenis 1 (800g), Jenis 2 (1200g), Jenis 3 (1500g). Tentukan Benar/Salah opsi jumlah keset per kardus (&le; 10kg)!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Kardus A: 12 buah keset (11 jenis 1 + 1 jenis 2 = 10.000g)" },
+                    { id: "s2", text: "Kardus B: 7 buah keset (6 jenis 3 + 1 jenis 1 = 9.800g)" },
+                    { id: "s3", text: "Kardus C: 6 buah keset (Melampaui batas berat 10 kg)" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Benar", s3: "Salah" },
+                pembahasan: "Kardus A = 10.000g (10kg pas) [BENAR]. Kardus B = 9.800g (<10kg) [BENAR]. Kardus C [SALAH]."
+            },
+            {
+                id: 25, stimulusId: 9,
+                title: "SOAL 25: Pengukuran Besar Sudut Gunting",
+                question: "Gunting A terbuka 35°. Gunting B terbuka lebih lebar dari gunting A. Manakah sudut yang mungkin? (Centang semua jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "29°" },
+                    { id: "opt2", text: "51°" },
+                    { id: "opt3", text: "63°" }
+                ],
+                correctAnswer: ["opt2", "opt3"],
+                pembahasan: "Sudut yang lebih besar dari 35° adalah 51° dan 63°."
+            },
+            {
+                id: 26, stimulusId: 10,
+                title: "SOAL 26: Penggabungan Data Diagram Batang Roti",
+                question: "Gabungan Roti Jkt+Tgr: Jan (1.000), Feb (1.500), Mar (2.250), Apr (3.200), Mei (4.000). Grafik mana yang benar?",
+                type: "single",
+                options: [
+                    { id: "A", text: "Gambar Grafik A" },
+                    { id: "B", text: "Gambar Grafik B" },
+                    { id: "C", text: "Gambar Grafik C (Batang Mei mencapai 4.000)" },
+                    { id: "D", text: "Gambar Grafik D" }
+                ],
+                correctAnswer: "C",
+                pembahasan: "Grafik C tepat menyajikan penjumlahan data kedua cabang untuk tiap bulannya."
+            },
+            {
+                id: 27, stimulusId: 10,
+                title: "SOAL 27: Pengurangan Waktu Screen Time Siska",
+                question: "Total screen time sekolah = 7 jam. Batas maksimal = 2 jam. Berapa jam pengurangan yang disarankan? (Centang jawaban benar!)",
+                type: "multiple",
+                options: [
+                    { id: "opt1", text: "6 jam" },
+                    { id: "opt2", text: "5 jam" },
+                    { id: "opt3", text: "4 jam" }
+                ],
+                correctAnswer: ["opt1", "opt2"],
+                pembahasan: "Kelebihan waktu = 7 - 2 = 5 jam. Pengurangan 5 jam atau 6 jam cukup untuk memenuhi aturan batas maksimal."
+            },
+            {
+                id: 28, stimulusId: 10,
+                title: "SOAL 28: Membaca Data Diagram Batang Kantin",
+                question: "Berdasarkan diagram batang kantin hari Kamis, berapa banyak murid yang membeli Telur Gulung?",
+                type: "single",
+                options: [
+                    { id: "A", text: "22 murid" },
+                    { id: "B", text: "23 murid" },
+                    { id: "C", text: "24 murid" },
+                    { id: "D", text: "25 murid" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Tinggi diagram batang untuk kategori Telur Gulung menunjuk angka 23 pembeli."
+            },
+            {
+                id: 29, stimulusId: 10,
+                title: "SOAL 29: Evaluasi Daya Listrik Gunung Berapi (1 Gunung = 50 MW)",
+                question: "Tentukan Benar atau Salah estimasi daya listrik gunung berapi tiap negara!",
+                type: "table",
+                statements: [
+                    { id: "s1", text: "Gunung berapi di Rusia (27 gunung) dapat menghasilkan 1.350 MW" },
+                    { id: "s2", text: "Gunung berapi di Vanuatu (9 gunung) dapat menghasilkan 450 MW" },
+                    { id: "s3", text: "Gunung berapi di Papua Nugini (13 gunung) dapat menghasilkan 550 MW" }
+                ],
+                correctAnswer: { s1: "Benar", s2: "Benar", s3: "Salah" },
+                pembahasan: "Rusia: 27 × 50 MW = 1.350 MW [BENAR]. Vanuatu: 9 × 50 MW = 450 MW [BENAR]. Papua Nugini: 13 × 50 MW = 650 MW [SALAH]."
+            },
+            {
+                id: 30, stimulusId: 10,
+                title: "SOAL 30: Menentukan Data Hilang Diagram Batang Bus Wisata",
+                question: "Kapasitas bus 72 orang. Kelas 6A = 25 siswa, 6B = 24 siswa. Berapa banyak siswa kelas 6C?",
+                type: "single",
+                options: [
+                    { id: "A", text: "22 siswa" },
+                    { id: "B", text: "23 siswa" },
+                    { id: "C", text: "24 siswa" },
+                    { id: "D", text: "25 siswa" }
+                ],
+                correctAnswer: "B",
+                pembahasan: "Siswa Kelas 6C = 72 - 25 - 24 = 23 siswa."
+            }
+        ];
+
+        // Global State
+        let userName = "";
+        let currentSubject = "indo";
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+
+        // Start Quiz Engine
+        function startQuiz() {
+            const nameInput = document.getElementById("userNameInput").value.trim();
+            if (!nameInput) return;
+            
+            let count = parseInt(document.getElementById("questionCountInput").value);
+            if (isNaN(count) || count < 1) count = 1;
+            if (count > 30) count = 30;
+
+            userName = nameInput;
+            currentSubject = document.getElementById("subjectSelect").value;
+            
+            const fullList = (currentSubject === "indo") ? questionsIndo : questionsMtk;
+            selectedQuestions = fullList.slice(0, count);
+
+            const subjectLabel = currentSubject === "indo" ? "Bahasa Indonesia" : "Matematika";
+            document.getElementById("headerUserName").innerText = userName;
+            document.getElementById("headerSubjectBadge").innerText = subjectLabel;
+            document.getElementById("userInfoHeader").classList.remove("hidden");
+            
+            document.getElementById("stepDashboard").classList.add("hidden");
+            document.getElementById("stepQuiz").classList.remove("hidden");
+
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            renderQuestion();
+        }
+
+        // Render Current Question
+        function renderQuestion() {
+            const q = selectedQuestions[currentQuestionIndex];
+            const total = selectedQuestions.length;
+            const stimuli = (currentSubject === "indo") ? stimuliDataIndo : stimuliDataMtk;
+            
+            // Progress Update
+            document.getElementById("questionIndicator").innerText = `Soal ${currentQuestionIndex + 1} dari ${total}`;
+            document.getElementById("progressBar").style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
+            
+            // Meta
+            document.getElementById("questionTitle").innerText = q.title;
+            document.getElementById("questionText").innerText = q.question;
+
+            // Render Stimulus
+            document.getElementById("stimulusContent").innerHTML = stimuli[q.stimulusId];
+
+            // Render Options
+            const container = document.getElementById("optionsContainer");
+            container.innerHTML = "";
+
+            if (q.type === "single") {
+                document.getElementById("questionTypeBadge").innerText = "Pilihan Ganda";
+                q.options.forEach(opt => {
+                    const isChecked = userAnswers[q.id] === opt.id;
+                    container.innerHTML += `
+                        <label class="flex items-start p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition ${isChecked ? 'border-indigo-600 bg-indigo-50/50' : 'border-slate-200'}">
+                            <input type="radio" name="q_${q.id}" value="${opt.id}" ${isChecked ? 'checked' : ''} onchange="saveAnswer(${q.id}, '${opt.id}')" class="mt-1 text-indigo-600 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm font-medium text-slate-700">${opt.text}</span>
+                        </label>
+                    `;
+                });
+            } else if (q.type === "multiple") {
+                document.getElementById("questionTypeBadge").innerText = "Centang Banyak ( >1 Jwbn)";
+                const currentSelection = userAnswers[q.id] || [];
+                q.options.forEach(opt => {
+                    const isChecked = currentSelection.includes(opt.id);
+                    container.innerHTML += `
+                        <label class="flex items-start p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition ${isChecked ? 'border-indigo-600 bg-indigo-50/50' : 'border-slate-200'}">
+                            <input type="checkbox" value="${opt.id}" ${isChecked ? 'checked' : ''} onchange="saveMultipleAnswer(${q.id}, '${opt.id}')" class="mt-1 rounded text-indigo-600 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm font-medium text-slate-700">${opt.text}</span>
+                        </label>
+                    `;
+                });
+            } else if (q.type === "table" || q.type === "table_custom") {
+                document.getElementById("questionTypeBadge").innerText = "Tabel Evaluasi Pernyataan";
+                const headers = q.optionsHeader || ["Benar", "Salah"];
+                const answers = userAnswers[q.id] || {};
+
+                let tableHtml = `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left border border-slate-200 rounded-lg overflow-hidden">
+                            <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">Pernyataan</th>
+                                    <th class="p-3 text-center w-28">${headers[0]}</th>
+                                    <th class="p-3 text-center w-28">${headers[1]}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                `;
+
+                q.statements.forEach(stmt => {
+                    const val = answers[stmt.id];
+                    tableHtml += `
+                        <tr>
+                            <td class="p-3 text-slate-700 font-medium">${stmt.text}</td>
+                            <td class="p-3 text-center">
+                                <input type="radio" name="tbl_${q.id}_${stmt.id}" value="${headers[0]}" ${val === headers[0] ? 'checked' : ''} onchange="saveTableAnswer(${q.id}, '${stmt.id}', '${headers[0]}')" class="text-indigo-600 focus:ring-indigo-500">
+                            </td>
+                            <td class="p-3 text-center">
+                                <input type="radio" name="tbl_${q.id}_${stmt.id}" value="${headers[1]}" ${val === headers[1] ? 'checked' : ''} onchange="saveTableAnswer(${q.id}, '${stmt.id}', '${headers[1]}')" class="text-indigo-600 focus:ring-indigo-500">
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tableHtml += `</tbody></table></div>`;
+                container.innerHTML = tableHtml;
+            }
+
+            // Buttons State
+            document.getElementById("btnPrev").disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === total - 1) {
+                document.getElementById("btnNext").innerText = "Selesai & Lihat Hasil ✨";
+                document.getElementById("btnNext").className = "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition text-sm";
+            } else {
+                document.getElementById("btnNext").innerText = "Selanjutnya →";
+                document.getElementById("btnNext").className = "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition text-sm";
+            }
+        }
+
+        // Answer State Handlers
+        function saveAnswer(qId, value) {
+            userAnswers[qId] = value;
+            renderQuestion();
+        }
+
+        function saveMultipleAnswer(qId, val) {
+            let list = userAnswers[qId] || [];
+            if (list.includes(val)) {
+                list = list.filter(item => item !== val);
+            } else {
+                list.push(val);
+            }
+            userAnswers[qId] = list;
+            renderQuestion();
+        }
+
+        function saveTableAnswer(qId, stmtId, val) {
+            if (!userAnswers[qId]) userAnswers[qId] = {};
+            userAnswers[qId][stmtId] = val;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < selectedQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Calculate and Display Results
+        function finishQuiz() {
+            let correctCount = 0;
+            const total = selectedQuestions.length;
+
+            selectedQuestions.forEach(q => {
+                const ans = userAnswers[q.id];
+                if (q.type === "single") {
+                    if (ans === q.correctAnswer) correctCount++;
+                } else if (q.type === "multiple") {
+                    const userArr = (ans || []).sort().join(",");
+                    const correctArr = q.correctAnswer.sort().join(",");
+                    if (userArr === correctArr) correctCount++;
+                } else if (q.type === "table" || q.type === "table_custom") {
+                    let isAllCorrect = true;
+                    for (let key in q.correctAnswer) {
+                        if (!ans || ans[key] !== q.correctAnswer[key]) {
+                            isAllCorrect = false;
+                            break;
+                        }
+                    }
+                    if (isAllCorrect) correctCount++;
+                }
+            });
+
+            const totalScore = (correctCount / total) * 100;
+            document.getElementById("resultUserName").innerText = userName;
+            document.getElementById("finalScore").innerText = Math.round(totalScore);
+            document.getElementById("scoreStatus").innerText = `${correctCount} dari ${total} Soal Dijawab Benar`;
+
+            renderPembahasan();
+
+            document.getElementById("stepQuiz").classList.add("hidden");
+            document.getElementById("stepResult").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Discussion Items
+        function renderPembahasan() {
+            const list = document.getElementById("pembahasanList");
+            list.innerHTML = "";
+
+            selectedQuestions.forEach((q, index) => {
+                const ans = userAnswers[q.id];
+                let isCorrect = false;
+
+                if (q.type === "single") {
+                    isCorrect = (ans === q.correctAnswer);
+                } else if (q.type === "multiple") {
+                    isCorrect = ((ans || []).sort().join(",") === q.correctAnswer.sort().join(","));
+                } else if (q.type === "table" || q.type === "table_custom") {
+                    isCorrect = true;
+                    for (let key in q.correctAnswer) {
+                        if (!ans || ans[key] !== q.correctAnswer[key]) {
+                            isCorrect = false;
+                            break;
+                        }
+                    }
+                }
+
+                list.innerHTML += `
+                    <div class="p-5 border rounded-xl ${isCorrect ? 'border-emerald-200 bg-emerald-50/40' : 'border-rose-200 bg-rose-50/40'}">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-sm text-slate-800">Soal ${index + 1}</span>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${isCorrect ? '✓ Benar' : '✗ Salah / Belum Tepat'}
+                            </span>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-700 mb-3">${q.question}</p>
+                        
+                        <div class="bg-white/80 p-3.5 rounded-lg border border-slate-200/80 text-xs space-y-2">
+                            <div>
+                                <span class="font-bold text-slate-600">Kunci Jawaban Resmi PDF:</span> 
+                                <span class="text-emerald-700 font-semibold">${formatCorrectAnswerText(q)}</span>
+                            </div>
+                            <div>
+                                <span class="font-bold text-slate-600">Penjelasan & Pembahasan:</span>
+                                <p class="text-slate-600 mt-0.5">${q.pembahasan}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function formatCorrectAnswerText(q) {
+            if (q.type === "single") {
+                const opt = q.options.find(o => o.id === q.correctAnswer);
+                return opt ? opt.text : q.correctAnswer;
+            } else if (q.type === "multiple") {
+                return q.options.filter(o => q.correctAnswer.includes(o.id)).map(o => o.text).join(" | ");
+            } else if (q.type === "table" || q.type === "table_custom") {
+                return Object.entries(q.correctAnswer).map(([k, v]) => `${k.toUpperCase()}: ${v}`).join(", ");
+            }
+            return "";
+        }
+
+        function restartQuiz() {
+            userAnswers = {};
+            document.getElementById("stepResult").classList.add("hidden");
+            document.getElementById("stepDashboard").classList.remove("hidden");
+            document.getElementById("userNameInput").value = "";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
