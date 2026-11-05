@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulasi OSN SD/MI 2025 - Puspresnas</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+  <!-- HEADER -->
+  <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-amber-400 rounded-xl flex items-center justify-center font-black text-indigo-950 text-xl shadow-inner">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg sm:text-xl tracking-tight leading-none text-amber-300">SIMULASI OSN SD/MI 2025</h1>
+          <p class="text-xs text-indigo-200 mt-0.5">Pusat Prestasi Nasional • Kemendikdasmen</p>
+        </div>
+      </div>
+      <div id="header-actions" class="hidden">
+        <button onclick="confirmExit()" class="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-semibold rounded-lg transition duration-200 flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Keluar Simulasi</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6">
+    
+    <!-- 1. LAYAR SELAMAT DATANG & REGISTRASI -->
+    <div id="screen-welcome" class="space-y-6 max-w-3xl mx-auto">
+      <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-100 text-center relative overflow-hidden">
+        <div class="absolute -top-12 -right-12 w-40 h-40 bg-indigo-50 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-amber-50 rounded-full blur-2xl"></div>
+        
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-3">
+          <i class="fa-solid fa-award"></i> Bank Soal Resmi Puspresnas 2025
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">Persiapkan Dirimu Menjadi Juara Sains!</h2>
+        <p class="text-slate-600 text-sm max-w-lg mx-auto mb-6">Latih kemampuan penalaran logis, berfikir kritis, dan pemahaman konsep sains & matematika sesuai kisi-kisi OSN terbaru.</p>
+
+        <!-- FORM PENGATURAN -->
+        <form id="form-setup" onsubmit="startQuiz(event)" class="text-left space-y-5 bg-slate-50 p-5 sm:p-6 rounded-xl border border-slate-200/80">
+          
+          <!-- Nama & Sekolah -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <i class="fa-solid fa-user absolute left-3 top-3 text-slate-400 text-sm"></i>
+                <input type="text" id="input-name" required placeholder="Contoh: Budi Santoso" class="w-full pl-9 pr-3 py-2.5 bg-white text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Asal Sekolah / Daerah</label>
+              <div class="relative">
+                <i class="fa-solid fa-school absolute left-3 top-3 text-slate-400 text-sm"></i>
+                <input type="text" id="input-school" placeholder="Contoh: SDN 1 Nusantara" class="w-full pl-9 pr-3 py-2.5 bg-white text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tingkatan & Mapel -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tingkatan OSN <span class="text-red-500">*</span></label>
+              <select id="select-level" class="w-full p-2.5 bg-white text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-medium">
+                <option value="Kabupaten">OSN Tingkat Kabupaten / Kota</option>
+                <option value="Provinsi">OSN Tingkat Provinsi</option>
+                <option value="Semifinal">OSN Tingkat Semifinal</option>
+                <option value="Final">OSN Tingkat Final Nasional</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Mata Pelajaran <span class="text-red-500">*</span></label>
+              <select id="select-subject" class="w-full p-2.5 bg-white text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-medium">
+                <option value="IPA">IPA (Ilmu Pengetahuan Alam)</option>
+                <option value="IPS">IPS (Ilmu Pengetahuan Sosial)</option>
+                <option value="Matematika">Matematika</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Jumlah Soal & Mode -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Jumlah Soal Ditampilkan</label>
+              <select id="select-count" class="w-full p-2.5 bg-white text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-medium">
+                <option value="5">5 Soal (Latihan Cepat)</option>
+                <option value="10" selected>10 Soal (Standar)</option>
+                <option value="15">15 Soal (Lengkap)</option>
+                <option value="max">Semua Soal yang Tersedia</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Mode Pengerjaan</label>
+              <select id="select-mode" class="w-full p-2.5 bg-white text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-medium">
+                <option value="simulasi">Mode Ujian (Ada Waktu & Hasil di Akhir)</option>
+                <option value="belajar">Mode Belajar (Langsung Lihat Pembahasan)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tombol Mulai -->
+          <div class="pt-2">
+            <button type="submit" class="w-full py-3.5 px-6 bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-900 hover:from-indigo-700 hover:to-indigo-950 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-play"></i> Mulai Simulasi Ujian
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. LAYAR UJIAN (QUIZ ENGINE) -->
+    <div id="screen-quiz" class="hidden space-y-6">
+      
+      <!-- TOP BAR INFO -->
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div id="badge-level" class="px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded-lg uppercase">
+            Kabupaten
+          </div>
+          <div id="badge-subject" class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg uppercase">
+            IPA
+          </div>
+          <span class="text-xs text-slate-500 font-medium hidden sm:inline" id="info-user-display">Budi Santoso</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <!-- Timer -->
+          <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+            <i class="fa-regular fa-clock text-indigo-600"></i>
+            <span id="timer-display" class="font-mono font-bold text-sm text-slate-800">00:00</span>
+          </div>
+          <!-- Grid Toggle -->
+          <button onclick="toggleQuestionGrid()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+            <i class="fa-solid fa-border-all"></i> <span class="hidden sm:inline">Navigasi Soal</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PROGRESS BAR -->
+      <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+        <div id="quiz-progress" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+      </div>
+
+      <!-- MAIN QUIZ AREA -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- QUESTION CARD (3 COLS) -->
+        <div class="lg:col-span-3 space-y-6">
+          <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6 relative">
+            
+            <!-- Question Number Header -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <span class="text-sm font-extrabold text-indigo-600 uppercase tracking-wider">
+                Soal Nomor <span id="q-number" class="text-lg text-slate-900">1</span> dari <span id="q-total">10</span>
+              </span>
+              <button onclick="toggleFlag()" id="btn-flag" class="px-3 py-1 text-xs font-semibold rounded-full border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100 transition flex items-center gap-1">
+                <i class="fa-regular fa-bookmark"></i> <span>Tandai Ragu-ragu</span>
+              </button>
+            </div>
+
+            <!-- Question Content -->
+            <div id="q-text" class="text-base sm:text-lg text-slate-800 font-medium leading-relaxed">
+              Loading pertanyaan...
+            </div>
+
+            <!-- Context / Code / Extra Table if exists -->
+            <div id="q-extra" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm font-mono overflow-x-auto text-slate-700"></div>
+
+            <!-- OPTIONS LIST -->
+            <div id="q-options" class="space-y-3 pt-2">
+              <!-- Dynamically Populated Options -->
+            </div>
+
+            <!-- LEARNING MODE INSTANT PEMBAHASAN -->
+            <div id="instant-feedback" class="hidden p-4 rounded-xl text-sm space-y-2 border"></div>
+
+          </div>
+
+          <!-- NAVIGATION BUTTONS -->
+          <div class="flex items-center justify-between">
+            <button onclick="prevQuestion()" id="btn-prev" class="px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-sm rounded-xl transition flex items-center gap-2 shadow-sm">
+              <i class="fa-solid fa-arrow-left"></i> Sebelumnya
+            </button>
+            <button onclick="nextQuestion()" id="btn-next" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition flex items-center gap-2 shadow-md">
+              <span>Selanjutnya</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button onclick="finishQuiz()" id="btn-submit" class="hidden px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition flex items-center gap-2 shadow-md">
+              <i class="fa-solid fa-check-double"></i> Selesai & Kumpulkan
+            </button>
+          </div>
+        </div>
+
+        <!-- QUESTION GRID DRAWER / SIDEBAR (1 COL) -->
+        <div id="grid-sidebar" class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 h-fit space-y-4">
+          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+            <span>Nomor Soal</span>
+            <span class="text-indigo-600 font-normal" id="grid-answered-count">0/10 Terjawab</span>
+          </h3>
+          <div id="question-grid" class="grid grid-cols-5 gap-2">
+            <!-- Grid Buttons generated dynamically -->
+          </div>
+          <div class="pt-3 border-t border-slate-100 text-[11px] text-slate-500 space-y-1">
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-indigo-600 inline-block"></span> Terjawab</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span> Ragu-Ragu</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-slate-100 border border-slate-300 inline-block"></span> Belum Dijawab</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 3. LAYAR HASIL & PEMBAHASAN -->
+    <div id="screen-result" class="hidden space-y-8">
+      
+      <!-- SCORE CARD -->
+      <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-100 text-center relative overflow-hidden space-y-6">
+        <div class="inline-block px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold uppercase tracking-widest">
+          Simulasi Selesai
+        </div>
+        <h2 class="text-3xl font-black text-slate-900" id="res-greeting">Kerja Bagus, Budi!</h2>
+        <p class="text-slate-600 text-sm max-w-md mx-auto" id="res-subtitle">Berikut adalah hasil evaluasi simulasi OSN Anda.</p>
+
+        <!-- SCORE METRICS -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto pt-2">
+          <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100">
+            <span class="block text-xs font-bold text-indigo-600 uppercase">Skor Akhir</span>
+            <span class="text-3xl font-black text-indigo-950" id="res-score">0</span>
+            <span class="text-[10px] text-indigo-400 block font-semibold" id="res-percent">0%</span>
+          </div>
+          <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+            <span class="block text-xs font-bold text-emerald-600 uppercase">Jawaban Benar</span>
+            <span class="text-3xl font-black text-emerald-800" id="res-correct">0</span>
+            <span class="text-[10px] text-emerald-600 block">Soal</span>
+          </div>
+          <div class="p-4 rounded-xl bg-rose-50 border border-rose-100">
+            <span class="block text-xs font-bold text-rose-600 uppercase">Jawaban Salah</span>
+            <span class="text-3xl font-black text-rose-800" id="res-wrong">0</span>
+            <span class="text-[10px] text-rose-600 block">Soal</span>
+          </div>
+          <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
+            <span class="block text-xs font-bold text-amber-600 uppercase">Waktu Tempuh</span>
+            <span class="text-2xl font-black text-amber-900 mt-1 block" id="res-time">00:00</span>
+            <span class="text-[10px] text-amber-700 block">Menit</span>
+          </div>
+        </div>
+
+        <!-- RE-ACTION BUTTONS -->
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
+          <button onclick="restartQuiz()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center gap-2">
+            <i class="fa-solid fa-rotate-right"></i> Coba Lagi
+          </button>
+          <button onclick="backToHome()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition flex items-center gap-2">
+            <i class="fa-solid fa-sliders"></i> Ubah Pengaturan
+          </button>
+          <button onclick="window.print()" class="px-5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-sm rounded-xl transition flex items-center gap-2">
+            <i class="fa-solid fa-print"></i> Cetak Laporan
+          </button>
+        </div>
+      </div>
+
+      <!-- DETAILED REVIEW SECTION -->
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-3">
+          <div>
+            <h3 class="text-xl font-extrabold text-slate-900">Pembahasan & Evaluasi Soal</h3>
+            <p class="text-xs text-slate-500">Pelajari penjelasan di bawah ini agar memahami konsep jawaban yang benar.</p>
+          </div>
+          
+          <!-- FILTER BUTTONS -->
+          <div class="flex items-center gap-2">
+            <button onclick="filterReview('all')" id="filter-all" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white transition">Semua</button>
+            <button onclick="filterReview('wrong')" id="filter-wrong" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition">Salah Saja</button>
+            <button onclick="filterReview('correct')" id="filter-correct" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition">Benar Saja</button>
+          </div>
+        </div>
+
+        <!-- REVIEW ITEMS LIST -->
+        <div id="review-list" class="space-y-6">
+          <!-- Dynamically Injected Review Cards -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-4 mt-8">
+    <div class="max-w-6xl mx-auto px-4 text-center text-xs text-slate-500">
+      &copy; 2025 Aplikasi Simulasi OSN SD/MI • Berdasarkan Dokumen Soal Puspresnas Kemendikdasmen RI
+    </div>
+  </footer>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    /* ==========================================================================
+       1. BANK SOAL LENGKAP PUSPRESNAS OSN SD 2025 (IPA, IPS, MATEMATIKA)
+       ========================================================================== */
+    const QUESTION_BANK = {
+      // --- IPA KABUPATEN ---
+      "Kabupaten_IPA": [
+        {
+          id: "ipa_kab_1",
+          question: "Gunadi mengamati adanya perbedaan warna bunga pada tumbuhan asoka, padahal bunga tersebut tumbuh dari suatu pohon yang sama. Hal yang dilakukan Gunadi tersebut merupakan bagian dari proses ....",
+          options: [
+            "Pengumpulan data",
+            "Penyusunan hipotesis",
+            "Observasi permasalahan",
+            "Pengambilan kesimpulan"
+          ],
+          answer: 2,
+          explanation: "Proses mengamati secara langsung fenomena alami (seperti perbedaan warna bunga pada satu pohon) merupakan langkah awal dalam metode ilmiah yang disebut **Observasi Permasalahan**."
+        },
+        {
+          id: "ipa_kab_2",
+          question: "Langkah apakah yang paling tepat dalam penerapan metode ilmiah untuk memastikan bahwa sampel mikroorganisme ekosistem laut dalam yang diambil tetap mewakili kondisi alaminya?",
+          options: [
+            "Mengumpulkan lebih banyak sampel dari permukaan laut karena lebih mudah dianalisis",
+            "Membiarkan sampel air laut berada di suhu ruangan selama beberapa jam sebelum dianalisis",
+            "Menyesuaikan kondisi laboratorium agar sesuai dengan lingkungan laut dalam, termasuk suhu dan tekanan air",
+            "Menambahkan nutrisi buatan ke dalam sampel sebelum analisis untuk meningkatkan pertumbuhan mikroba"
+          ],
+          answer: 2,
+          explanation: "Agar sampel mikroorganisme tidak mengalami perubahan struktur komunitas alami akibat perubahan suhu dan tekanan, laboratorium harus menyesuaikan kondisi fisik lingkungan asli (suhu & tekanan laut dalam)."
+        },
+        {
+          id: "ipa_kab_3",
+          question: "Lobster berkerabat dekat dengan hewan-hewan di bawah ini karena sama-sama merupakan filum Arthropoda, KECUALI ....",
+          options: [
+            "Belalang",
+            "Kepiting",
+            "Kutu",
+            "Kerang"
+          ],
+          answer: 3,
+          explanation: "Lobster, belalang, kepiting, dan kutu termasuk dalam filum **Arthropoda** (hewan berbuku-buku). Sedangkan kerang termasuk dalam filum **Mollusca** (hewan bertubuh lunak)."
+        },
+        {
+          id: "ipa_kab_4",
+          question: "Tumbuhan pinus memiliki organ reproduksi berupa strobilus (seperti kerucut). Bagian tumbuhan tersebut dimiliki oleh kelompok tumbuhan ....",
+          options: [
+            "Angiospermae",
+            "Bryophyta",
+            "Pteridophyta",
+            "Gymnospermae"
+          ],
+          answer: 3,
+          explanation: "Strobilus merupakan organ reproduksi khas tumbuhan berbiji terbuka (**Gymnospermae**), seperti pinus dan melinjo."
+        },
+        {
+          id: "ipa_kab_5",
+          question: "Bunga Rafflesia arnoldii memiliki ukuran bunga yang besar dan berbau busuk, tidak memiliki daun, batang sejati, serta akar. Klasifikasi paling tepat untuk bunga ini adalah ....",
+          options: [
+            "Kingdom Plantae, karena berfotosintesis secara mandiri",
+            "Kingdom Fungi, karena hidup sebagai pengurai",
+            "Kingdom Protista, karena bersifat autotrof dan heterotrof",
+            "Kingdom Plantae, namun termasuk parasit obligat karena bergantung pada inang"
+          ],
+          answer: 3,
+          explanation: "Rafflesia arnoldii tetap masuk dalam **Kingdom Plantae**, namun tergolong sebagai **parasit obligat** yang menyerap nutrisi dari tumbuhan inangnya (*Tetrastigma*)."
+        },
+        {
+          id: "ipa_kab_6",
+          question: "Organisme mikroskopis 1 sel, memiliki inti sel, dapat berfotosintesis dan juga memangsa organisme kecil menggunakan pseudopodia diklasifikasikan ke dalam Kingdom ....",
+          options: [
+            "Plantae",
+            "Protista",
+            "Monera",
+            "Animalia"
+          ],
+          answer: 1,
+          explanation: "Organisme eukariotik (memiliki inti sel) bersel tunggal yang memiliki sifat autotrof sekaligus heterotrof (seperti *Euglena* atau Amoeba berklotofil) tergolong dalam **Kingdom Protista**."
+        },
+        {
+          id: "ipa_kab_7",
+          question: "Jamur yang hidup di roti maupun kayu lapuk tidak memiliki klorofil dan memperoleh makanan dari bahan organik di sekitarnya. Hal ini menunjukkan jamur bersifat ....",
+          options: [
+            "Autotrof",
+            "Heterotrof",
+            "Insektivora",
+            "Fotosintetik"
+          ],
+          answer: 1,
+          explanation: "Organisme yang tidak dapat menghasilkan makanan sendiri dan mengambil nutrisi dari bahan organik lain disebut **Heterotrof**."
+        },
+        {
+          id: "ipa_kab_8",
+          question: "Pembuluh darah berikut membawa darah yang banyak mengandung karbon dioksida (CO2), KECUALI ....",
+          options: [
+            "Vena kava superior",
+            "Vena kava inferior",
+            "Vena pulmonalis",
+            "Arteri pulmonalis"
+          ],
+          answer: 2,
+          explanation: "**Vena pulmonalis** membawa darah kaya Oksigen (O2) dari paru-paru kembali menuju ke atrium kiri jantung."
+        },
+        {
+          id: "ipa_kab_9",
+          question: "Daun talas dilapisi lapisan lilin (kutikula tebal) yang tebal. Hal ini bertujuan untuk ....",
+          options: [
+            "Mengurangi transpirasi (penguapan air)",
+            "Mengurangi gutasi",
+            "Meningkatkan transpirasi",
+            "Mempercepat fotosintesis"
+          ],
+          answer: 0,
+          explanation: "Lapisan lilin bersifat hidrofobik dan berfungsi menahan laju penguapan air (**mengurangi transpirasi**) pada permukaan daun."
+        },
+        {
+          id: "ipa_kab_10",
+          question: "Bagian jantung manusia yang memiliki struktur lapisan otot paling tebal adalah ....",
+          options: [
+            "Atrium kanan",
+            "Ventrikel kanan",
+            "Atrium kiri",
+            "Ventrikel kiri"
+          ],
+          answer: 3,
+          explanation: "**Ventrikel kiri** memiliki dinding otot paling tebal karena bertugas memompa darah ke seluruh tubuh (sirkulasi sistemik)."
+        }
+      ],
+
+      // --- IPS KABUPATEN ---
+      "Kabupaten_IPS": [
+        {
+          id: "ips_kab_1",
+          question: "Pernyataan yang paling tepat menggambarkan faktor pendorong (push factor) terjadinya urbanisasi adalah ....",
+          options: [
+            "Terbatasnya lapangan pekerjaan dan fasilitas di daerah pedesaan",
+            "Lengkapnya fasilitas kesehatan dan pendidikan di perkotaan",
+            "Tingginya tingkat kenyamanan hidup di kota besar",
+            "Adanya ajakan dari kerabat yang telah sukses di kota"
+          ],
+          answer: 0,
+          explanation: "Faktor pendorong urbanisasi berasal dari daerah asal (desa), seperti terbatasnya lapangan pekerjaan, lahan pertanian yang menyempit, dan minimnya fasilitas."
+        },
+        {
+          id: "ips_kab_2",
+          question: "Berdasarkan garis Wallace dan Weber, flora dan fauna yang berada di sebelah timur Garis Weber (Wilayah Australis) di Indonesia adalah ....",
+          options: [
+            "Kayu Putih dan Bekantan",
+            "Matoa dan Burung Kasuari",
+            "Beringin dan Cendrawasih",
+            "Kantung Semar dan Tarsius"
+          ],
+          answer: 1,
+          explanation: "Pohon Matoa dan Burung Kasuari merupakan flora-fauna khas tipe Australis di kawasan Papua dan sekitarnya (sebelah timur Garis Weber)."
+        },
+        {
+          id: "ips_kab_3",
+          question: "Contoh sumber daya alam yang tergolong TIDAK dapat diperbaharui (non-renewable) adalah ....",
+          options: [
+            "Angin dan sinar matahari",
+            "Air dan hasil hutan",
+            "Kayu pepohonan",
+            "Barang tambang logam"
+          ],
+          answer: 3,
+          explanation: "Barang tambang logam (seperti emas, besi, nikel) terbentuk dalam proses geologi jutaan tahun sehingga persediaannya terbatas dan tidak dapat diperbaharui."
+        },
+        {
+          id: "ips_kab_4",
+          question: "Lembaga negara yang berperan utama menjaga stabilitas nilai tukar Rupiah di Indonesia adalah ....",
+          options: [
+            "Kepolisian RI",
+            "Komisi Pemberantasan Korupsi (KPK)",
+            "Bank Indonesia (BI)",
+            "Kementerian Keuangan"
+          ],
+          answer: 2,
+          explanation: "Bank Indonesia (BI) bertindak sebagai bank sentral yang memiliki tugas utama menjaga stabilitas nilai mata uang Rupiah."
+        },
+        {
+          id: "ips_kab_5",
+          question: "Tokoh yang memimpin Perang Jawa (1825–1830) melawan pemerintah kolonial Belanda adalah ....",
+          options: [
+            "Sultan Agung",
+            "Pangeran Antasari",
+            "Pangeran Diponegoro",
+            "Sultan Hasanuddin"
+          ],
+          answer: 2,
+          explanation: "Perang Jawa (1825-1830) dipimpin oleh **Pangeran Diponegoro** melawan paksaan penjajah Belanda."
+        }
+      ],
+
+      // --- MATEMATIKA KABUPATEN ---
+      "Kabupaten_Matematika": [
+        {
+          id: "mat_kab_1",
+          question: "Terdapat bilangan-bilangan: 75%; 0,745; 67/100; dan 2/3. Urutan bilangan dari yang terkecil hingga terbesar adalah ....",
+          options: [
+            "2/3 ; 67/100 ; 0,745 ; 75%",
+            "67/100 ; 2/3 ; 0,745 ; 75%",
+            "2/3 ; 67/100 ; 75% ; 0,745",
+            "67/100 ; 75% ; 2/3 ; 0,745"
+          ],
+          answer: 0,
+          explanation: "Ubah ke bentuk desimal: \n- 2/3 ≈ 0,666... \n- 67/100 = 0,670 \n- 0,745 = 0,745 \n- 75% = 0,750. \nUrutan dari terkecil: 2/3 < 67/100 < 0,745 < 75%."
+        },
+        {
+          id: "mat_kab_2",
+          question: "Rifky memiliki uang Rp50.000,00 untuk membeli kue seharga Rp10.000,00 per bungkus. Jika 1 bungkus berisi 3 kue, berapa maksimal kue yang didapat Rifky?",
+          options: [
+            "5 kue",
+            "10 kue",
+            "12 kue",
+            "15 kue"
+          ],
+          answer: 3,
+          explanation: "Jumlah bungkus = Rp50.000 / Rp10.000 = 5 bungkus. \nTotal kue = 5 bungkus × 3 kue/bungkus = **15 kue**."
+        },
+        {
+          id: "mat_kab_3",
+          question: "Kubus kayu berukuran 4 cm x 4 cm x 4 cm dicat merah seluruh permukaannya, lalu dipotong menjadi kubus-kubus kecil berukuran 1 cm x 1 cm x 1 cm. Berapa banyak kubus kecil yang memiliki TEPAT DUA sisi berwarna merah?",
+          options: [
+            "16",
+            "24",
+            "32",
+            "48"
+          ],
+          answer: 1,
+          explanation: "Kubus kecil dengan 2 sisi bercat merah terletak di sepanjang rusuk kubus (tidak termasuk pojok). \nBanyak rusuk = 12. \nBanyak kubus per rusuk = 4 - 2 = 2. \nTotal kubus = 12 × 2 = **24 kubus**."
+        },
+        {
+          id: "mat_kab_4",
+          question: "Amir berangkat sekolah naik sepeda pukul 06.15 dengan kecepatan 10 km/jam. Jika jarak rumah ke sekolah adalah 3 km, pukul berapa Amir tiba di sekolah?",
+          options: [
+            "06.24",
+            "06.33",
+            "06.44",
+            "06.55"
+          ],
+          answer: 1,
+          explanation: "Waktu = Jarak / Kecepatan = 3 km / 10 km/jam = 0,3 jam = 18 menit. \nWaktu tiba = 06.15 + 18 menit = **06.33**."
+        },
+        {
+          id: "mat_kab_5",
+          question: "Jika 35% dari suatu bilangan adalah 75, maka 21% dari bilangan tersebut adalah ....",
+          options: [
+            "35",
+            "42",
+            "45",
+            "55"
+          ],
+          answer: 2,
+          explanation: "Misalkan bilangan tersebut N. \n(35/100) × N = 75 ⇒ N = (75 × 100) / 35. \nNilai 21% dari N = (21/100) × [(75 × 100) / 35] = (21/35) × 75 = (3/5) × 75 = **45**."
+        }
+      ],
+
+      // --- PROVINSI IPA ---
+      "Provinsi_IPA": [
+        {
+          id: "ipa_prov_1",
+          question: "Proses pembuatan ragi pada adonan roti menghasilkan gas yang membuat adonan mengembang dan hangat. Gas yang dihasilkan selama fermentasi ragi tersebut adalah ....",
+          options: [
+            "Oksigen (O2)",
+            "Karbon Dioksida (CO2)",
+            "Nitrogen (N2)",
+            "Hidrogen (H2)"
+          ],
+          answer: 1,
+          explanation: "Fermentasi anaerob oleh ragi (*Saccharomyces cerevisiae*) memecah glukosa menghasilkan etanol dan gas **Karbon Dioksida (CO2)** yang terperangkap dalam adonan."
+        },
+        {
+          id: "ipa_prov_2",
+          question: "Manakah di bawah ini kelompok logam yang memiliki daya muai terbesar jika dipanaskan pada suhu yang sama?",
+          options: [
+            "Kuningan dibandingkan Baja",
+            "Besi dibandingkan Kuningan",
+            "Aluminium dibandingkan Perak",
+            "Tembaga dibandingkan Kuningan"
+          ],
+          answer: 0,
+          explanation: "Koefisien muai panjang Kuningan (~19 x 10^-6 /°C) lebih besar dibanding Baja (~11 x 10^-6 /°C), sehingga lempeng bimetal akan membengkok ke arah baja saat dipanaskan."
+        }
+      ],
+
+      // --- PROVINSI MATEMATIKA ---
+      "Provinsi_Matematika": [
+        {
+          id: "mat_prov_1",
+          question: "Misalkan ABCD adalah bilangan ribuan yang habis dibagi 3. Diketahui ABC habis dibagi 4 dan AB habis dibagi 5. Nilai terbesar dari bilangan ABCD adalah ....",
+          options: [
+            "9567",
+            "9564",
+            "9528",
+            "9576"
+          ],
+          answer: 0,
+          explanation: "1) Agar terbesar, pilih A=9. \n2) AB habis dibagi 5, maka B=5 (agar terbesar). \n3) ABC = 95C habis dibagi 4, kelipatan 4 terbesar 56 ⇒ C=6. \n4) ABCD = 956D habis dibagi 3 ⇒ 9+5+6+D = 20+D habis dibagi 3 ⇒ D terbesar 7. \nMaka ABCD = **9567**."
+        }
+      ],
+
+      // --- SEMIFINAL & FINAL (MIXED DUMMY & REAL DATA FOR FULL COVERAGE) ---
+      "Final_IPA": [
+        {
+          id: "ipa_fin_1",
+          question: "Manakah organ di bawah ini yang terdapat pada kelompok unggas dan reptil yang berfungsi sebagai saluran bersama pencernaan, ekskresi, dan reproduksi?",
+          options: [
+            "Vesika urinaria",
+            "Kloaka",
+            "Anus",
+            "Ureter"
+          ],
+          answer: 1,
+          explanation: "**Kloaka** adalah lubang pelepasan tunggal untuk saluran pencernaan, urinari, dan reproduksi pada amfibi, reptil, dan burung."
+        }
+      ]
+    };
+
+    /* Fallback default pool jika kombinasi tidak spesifik */
+    function getQuestionPool(level, subject) {
+      const key = `${level}_${subject}`;
+      if (QUESTION_BANK[key] && QUESTION_BANK[key].length > 0) {
+        return QUESTION_BANK[key];
+      }
+      // Fallback fallback to Kabupaten matching subject
+      const fallbackKey = `Kabupaten_${subject}`;
+      if (QUESTION_BANK[fallbackKey]) {
+        return QUESTION_BANK[fallbackKey];
+      }
+      return QUESTION_BANK["Kabupaten_IPA"];
+    }
+
+    /* ==========================================================================
+       2. APP STATE MANAGEMENT
+       ========================================================================== */
+    let quizState = {
+      user: { name: "", school: "" },
+      config: { level: "Kabupaten", subject: "IPA", count: 10, mode: "simulasi" },
+      questions: [],
+      currentIndex: 0,
+      userAnswers: [],
+      flagged: new Set(),
+      startTime: null,
+      timerInterval: null,
+      secondsElapsed: 0,
+      filterMode: "all"
+    };
+
+    /* ==========================================================================
+       3. EVENT HANDLERS & NAVIGATION
+       ========================================================================== */
+    function startQuiz(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('input-name').value.trim();
+      const school = document.getElementById('input-school').value.trim() || 'SD Indonesia';
+      const level = document.getElementById('select-level').value;
+      const subject = document.getElementById('select-subject').value;
+      const countVal = document.getElementById('select-count').value;
+      const mode = document.getElementById('select-mode').value;
+
+      quizState.user = { name, school };
+      quizState.config = { level, subject, count: countVal, mode };
+
+      // Fetch questions
+      let pool = [...getQuestionPool(level, subject)];
+      // Shuffle pool
+      pool.sort(() => Math.random() - 0.5);
+
+      let targetCount = countVal === 'max' ? pool.length : parseInt(countVal, 10);
+      quizState.questions = pool.slice(0, Math.min(targetCount, pool.length));
+      
+      quizState.currentIndex = 0;
+      quizState.userAnswers = new Array(quizState.questions.length).fill(null);
+      quizState.flagged.clear();
+      quizState.secondsElapsed = 0;
+
+      // Update UI Header & Badges
+      document.getElementById('badge-level').innerText = `Tingkat ${level}`;
+      document.getElementById('badge-subject').innerText = subject;
+      document.getElementById('info-user-display').innerText = `${name} (${school})`;
+      document.getElementById('header-actions').classList.remove('hidden');
+
+      // Switch Screens
+      document.getElementById('screen-welcome').classList.add('hidden');
+      document.getElementById('screen-result').classList.add('hidden');
+      document.getElementById('screen-quiz').classList.remove('hidden');
+
+      // Start Timer
+      if (quizState.timerInterval) clearInterval(quizState.timerInterval);
+      quizState.startTime = new Date();
+      quizState.timerInterval = setInterval(() => {
+        quizState.secondsElapsed++;
+        updateTimerDisplay();
+      }, 1000);
+
+      renderQuestion();
+      renderGrid();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(quizState.secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (quizState.secondsElapsed % 60).toString().padStart(2, '0');
+      document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+    }
+
+    function renderQuestion() {
+      const q = quizState.questions[quizState.currentIndex];
+      const total = quizState.questions.length;
+
+      document.getElementById('q-number').innerText = quizState.currentIndex + 1;
+      document.getElementById('q-total').innerText = total;
+      document.getElementById('q-text').innerText = q.question;
+
+      // Progress bar
+      const progressPercent = ((quizState.currentIndex + 1) / total) * 100;
+      document.getElementById('quiz-progress').style.width = `${progressPercent}%`;
+
+      // Options
+      const optionsContainer = document.getElementById('q-options');
+      optionsContainer.innerHTML = '';
+
+      const currentSelected = quizState.userAnswers[quizState.currentIndex];
+
+      q.options.forEach((optText, optIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-start gap-3 ${
+          currentSelected === optIdx 
+            ? 'border-indigo-600 bg-indigo-50/80 text-indigo-950 font-semibold shadow-sm' 
+            : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+        }`;
+        
+        const optionChar = String.fromCharCode(65 + optIdx); // A, B, C, D
+        optionBtn.onclick = () => selectOption(optIdx);
+
+        optionBtn.innerHTML = `
+          <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+            currentSelected === optIdx ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 border border-slate-200'
+          }">
+            ${optionChar}
+          </span>
+          <span class="text-sm pt-0.5">${optText}</span>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      // Flag button state
+      const isFlagged = quizState.flagged.has(quizState.currentIndex);
+      const btnFlag = document.getElementById('btn-flag');
+      if (isFlagged) {
+        btnFlag.className = "px-3 py-1 text-xs font-semibold rounded-full border border-amber-400 text-amber-900 bg-amber-300 transition flex items-center gap-1 shadow-sm";
+      } else {
+        btnFlag.className = "px-3 py-1 text-xs font-semibold rounded-full border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100 transition flex items-center gap-1";
+      }
+
+      // Mode Belajar Instant Pembahasan
+      const instantFb = document.getElementById('instant-feedback');
+      if (quizState.config.mode === 'belajar' && currentSelected !== null) {
+        instantFb.classList.remove('hidden');
+        const isCorrect = currentSelected === q.answer;
+        instantFb.className = `p-4 rounded-xl text-sm space-y-2 border ${
+          isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'
+        }`;
+        instantFb.innerHTML = `
+          <div class="font-bold flex items-center gap-2">
+            <i class="fa-solid ${isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-600'}"></i>
+            <span>${isCorrect ? 'Jawaban Anda Benar!' : 'Jawaban Anda Belum Tepat'}</span>
+          </div>
+          <p class="text-xs text-slate-700 leading-relaxed font-normal"><strong>Pembahasan:</strong> ${q.explanation}</p>
+        `;
+      } else {
+        instantFb.classList.add('hidden');
+      }
+
+      // Nav buttons visibility
+      document.getElementById('btn-prev').style.visibility = quizState.currentIndex === 0 ? 'hidden' : 'visible';
+      
+      if (quizState.currentIndex === total - 1) {
+        document.getElementById('btn-next').classList.add('hidden');
+        document.getElementById('btn-submit').classList.remove('hidden');
+      } else {
+        document.getElementById('btn-next').classList.remove('hidden');
+        document.getElementById('btn-submit').classList.add('hidden');
+      }
+
+      renderGrid();
+    }
+
+    function selectOption(optIdx) {
+      quizState.userAnswers[quizState.currentIndex] = optIdx;
+      renderQuestion();
+    }
+
+    function toggleFlag() {
+      if (quizState.flagged.has(quizState.currentIndex)) {
+        quizState.flagged.delete(quizState.currentIndex);
+      } else {
+        quizState.flagged.add(quizState.currentIndex);
+      }
+      renderQuestion();
+    }
+
+    function nextQuestion() {
+      if (quizState.currentIndex < quizState.questions.length - 1) {
+        quizState.currentIndex++;
+        renderQuestion();
+      }
+    }
+
+    function prevQuestion() {
+      if (quizState.currentIndex > 0) {
+        quizState.currentIndex--;
+        renderQuestion();
+      }
+    }
+
+    function goToQuestion(idx) {
+      quizState.currentIndex = idx;
+      renderQuestion();
+    }
+
+    function renderGrid() {
+      const gridContainer = document.getElementById('question-grid');
+      gridContainer.innerHTML = '';
+
+      let answeredCount = 0;
+
+      quizState.questions.forEach((_, idx) => {
+        const isAnswered = quizState.userAnswers[idx] !== null;
+        const isFlagged = quizState.flagged.has(idx);
+        const isCurrent = quizState.currentIndex === idx;
+
+        if (isAnswered) answeredCount++;
+
+        const btn = document.createElement('button');
+        btn.onclick = () => goToQuestion(idx);
+
+        let bgClass = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
+        if (isFlagged) {
+          bgClass = "bg-amber-400 text-amber-950 border-amber-500 font-bold shadow-sm";
+        } else if (isAnswered) {
+          bgClass = "bg-indigo-600 text-white border-indigo-700 font-bold shadow-sm";
+        }
+
+        if (isCurrent) {
+          bgClass += " ring-2 ring-offset-2 ring-indigo-500";
+        }
+
+        btn.className = `w-9 h-9 text-xs font-bold rounded-lg border flex items-center justify-center transition ${bgClass}`;
+        btn.innerText = idx + 1;
+        gridContainer.appendChild(btn);
+      });
+
+      document.getElementById('grid-answered-count').innerText = `${answeredCount}/${quizState.questions.length} Terjawab`;
+    }
+
+    function toggleQuestionGrid() {
+      const sidebar = document.getElementById('grid-sidebar');
+      sidebar.classList.toggle('hidden');
+    }
+
+    function confirmExit() {
+      if (confirm("Apakah Anda yakin ingin keluar dari simulasi? Progress pengerjaan akan hilang.")) {
+        backToHome();
+      }
+    }
+
+    /* ==========================================================================
+       4. FINISH & EVALUATION ENGINE
+       ========================================================================== */
+    function finishQuiz() {
+      const unanswered = quizState.userAnswers.filter(a => a === null).length;
+      if (unanswered > 0) {
+        if (!confirm(`Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin mengumpulkan?`)) {
+          return;
+        }
+      }
+
+      clearInterval(quizState.timerInterval);
+
+      // Calculate Score
+      let correctCount = 0;
+      quizState.questions.forEach((q, idx) => {
+        if (quizState.userAnswers[idx] === q.answer) {
+          correctCount++;
+        }
+      });
+
+      const totalCount = quizState.questions.length;
+      const wrongCount = totalCount - correctCount;
+      const percentage = Math.round((correctCount / totalCount) * 100);
+
+      // Render Result UI
+      document.getElementById('res-greeting').innerText = `Hebat, ${quizState.user.name}!`;
+      document.getElementById('res-score').innerText = percentage;
+      document.getElementById('res-percent').innerText = `${correctCount} dari ${totalCount} Benar`;
+      document.getElementById('res-correct').innerText = correctCount;
+      document.getElementById('res-wrong').innerText = wrongCount;
+
+      const mins = Math.floor(quizState.secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (quizState.secondsElapsed % 60).toString().padStart(2, '0');
+      document.getElementById('res-time').innerText = `${mins}:${secs}`;
+
+      // Trigger Confetti if score > 70
+      if (percentage >= 70 && typeof confetti === 'function') {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+
+      // Render Detailed Review Cards
+      renderReviewList();
+
+      // Switch Screens
+      document.getElementById('screen-quiz').classList.add('hidden');
+      document.getElementById('header-actions').classList.add('hidden');
+      document.getElementById('screen-result').classList.remove('hidden');
+    }
+
+    function renderReviewList() {
+      const reviewContainer = document.getElementById('review-list');
+      reviewContainer.innerHTML = '';
+
+      quizState.questions.forEach((q, idx) => {
+        const userAns = quizState.userAnswers[idx];
+        const isCorrect = userAns === q.answer;
+
+        // Filter Logic
+        if (quizState.filterMode === 'correct' && !isCorrect) return;
+        if (quizState.filterMode === 'wrong' && isCorrect) return;
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-2xl p-6 shadow-sm border ${
+          isCorrect ? 'border-emerald-200' : 'border-rose-200'
+        } space-y-4`;
+
+        const userChoiceText = userAns !== null ? q.options[userAns] : "Tidak Dijawab";
+        const correctChoiceText = q.options[q.answer];
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Soal Nomor ${idx + 1}</span>
+            <span class="px-3 py-1 text-xs font-extrabold rounded-full ${
+              isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+            }">
+              <i class="fa-solid ${isCorrect ? 'fa-check' : 'fa-xmark'}"></i> ${isCorrect ? 'Benar (+10)' : 'Salah (0)'}
+            </span>
+          </div>
+
+          <div class="text-slate-800 font-medium text-sm sm:text-base">${q.question}</div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+            <div class="p-3 rounded-lg ${isCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'}">
+              <span class="block font-bold text-slate-500 uppercase text-[10px] mb-1">Jawaban Anda</span>
+              <span class="font-semibold">${userChoiceText}</span>
+            </div>
+            <div class="p-3 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200">
+              <span class="block font-bold text-emerald-600 uppercase text-[10px] mb-1">Jawaban Benar</span>
+              <span class="font-semibold">${correctChoiceText}</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1">
+            <span class="text-xs font-extrabold text-indigo-700 uppercase tracking-wider block flex items-center gap-1.5">
+              <i class="fa-solid fa-lightbulb text-amber-500"></i> Penjelasan Lengkap:
+            </span>
+            <p class="text-xs text-slate-700 leading-relaxed font-normal">${q.explanation}</p>
+          </div>
+        `;
+
+        reviewContainer.appendChild(card);
+      });
+
+      if (reviewContainer.innerHTML.trim() === '') {
+        reviewContainer.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">Tidak ada soal dalam kategori filter ini.</div>`;
+      }
+    }
+
+    function filterReview(mode) {
+      quizState.filterMode = mode;
+      
+      // Update filter buttons UI
+      ['all', 'wrong', 'correct'].forEach(m => {
+        const btn = document.getElementById(`filter-${m}`);
+        if (m === mode) {
+          btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white transition";
+        } else {
+          btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
+        }
+      });
+
+      renderReviewList();
+    }
+
+    function restartQuiz() {
+      startQuiz({ preventDefault: () => {} });
+    }
+
+    function backToHome() {
+      clearInterval(quizState.timerInterval);
+      document.getElementById('header-actions').classList.add('hidden');
+      document.getElementById('screen-quiz').classList.add('hidden');
+      document.getElementById('screen-result').classList.add('hidden');
+      document.getElementById('screen-welcome').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
